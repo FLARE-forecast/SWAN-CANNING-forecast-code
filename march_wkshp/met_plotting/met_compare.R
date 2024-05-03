@@ -11,11 +11,11 @@ Sys.setenv("AWS_DEFAULT_REGION" = "renc",
 reference_datetime <- lubridate::as_datetime('2024-03-25 00:00:00')
 forecast_hour <- lubridate::hour(0)
 endpoint <- 'renc.osn.xsede.org'
-
 ## pull in past NOAA data
 met_s3_past <- arrow::s3_bucket(paste0("bio230121-bucket01/flare/drivers/met/gefs-v12/stage3/site_id=CANN"),
                                 endpoint_override = endpoint,
                                 anonymous = TRUE)
+
 
 years_prior <- reference_datetime - lubridate::days(365)
 
@@ -178,6 +178,8 @@ met_noaa_obs |>
 
 df_past_sherry <- arrow::open_dataset(met_s3_past) |> filter(variable %in% c('surface_downwelling_shortwave_flux_in_air', 'eastward_wind', 'northward_wind')) |> collect()
 
+
+write_csv(df_past_sherry, '/home/addelany/SWAN-CANNING-forecast-code/march_wkshp/met_plotting/cann_met_file.csv')
 # 
 # # combine past and future noaa data
 # df_combined <- bind_rows(df_future, df_past) |> 
