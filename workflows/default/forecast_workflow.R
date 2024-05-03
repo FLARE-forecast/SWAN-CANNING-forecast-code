@@ -48,6 +48,7 @@ use_s3_inflow <- config$inflow$use_forecasted_inflow
 noaa_ready <- TRUE
 while(noaa_ready){
   
+  setwd(lake_directory)
   config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
   
   # ## run inflow forecast

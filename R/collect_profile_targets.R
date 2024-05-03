@@ -41,7 +41,7 @@ profile_data_grouped <- profile_data |>
   mutate(depth_rounded = plyr::round_any(depth, 0.25))  |> # bin depths by rounding -- matches depth configuration 
   select(-depth) |> 
   rename(depth = depth_rounded) |> 
-  filter(!is.na(depth), 
+  dplyr::filter(!is.na(depth), 
          depth <= 6.0) |> 
   pivot_longer(cols = c("salt", "temperature", "oxygen"), names_to = 'variable', values_to = 'data') |> 
   summarise(observation = mean(data, na.rm = TRUE), .by = c("datetime","variable","depth")) |> 
@@ -55,9 +55,9 @@ profile_data_grouped <- profile_data |>
   mutate(min_datetime = min(datetime)) |> 
   ungroup() |> 
   group_by(date, variable) |> 
-  filter(datetime == min_datetime) |> 
+  dplyr::filter(datetime == min_datetime) |> 
   ungroup() |> 
-  filter(!is.nan(observation)) |> 
+  dplyr::filter(!is.nan(observation)) |> 
   select(datetime = date, site_id, depth, observation, variable)
 
 return(profile_data_grouped)

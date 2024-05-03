@@ -27,7 +27,7 @@ cleaned_met_file <- met_dedup |>
   pivot_longer(cols = c(air_temperature, wind_speed, relative_humidity, surface_downwelling_shortwave_flux_in_air),
                names_to = 'variable', 
                values_to = 'observation') |> 
-  filter(!is.nan(observation)) |> 
+  dplyr::filter(!is.nan(observation)) |> 
   mutate(datetime =  lubridate::round_date(datetime), unit = 'hour') |> 
   select(datetime, site_id, observation, variable)
 

@@ -11,6 +11,8 @@ run_inflow_model <- function(site_id,
   
   if((!is.null(forecast_start_datetime)) && (forecast_horizon > 0)){
     
+    print('inside of run_inflow_model')
+    
     forecast_date <- lubridate::as_date(forecast_start_datetime) - lubridate::days(1)
     forecast_hour <- lubridate::hour(forecast_start_datetime)
     
@@ -27,7 +29,7 @@ run_inflow_model <- function(site_id,
     #                                   anonymous = TRUE)
     
     df_future <- arrow::open_dataset(met_s3_future) |> 
-      filter(variable %in% c("precipitation_flux","air_temperature")) |> 
+      dplyr::filter(variable %in% c("precipitation_flux","air_temperature")) |> 
       collect() |> 
       rename(ensemble = parameter) |> 
       mutate(variable = ifelse(variable == "precipitation_flux", "precipitation", variable),
@@ -46,7 +48,7 @@ run_inflow_model <- function(site_id,
     
     df_past <- arrow::open_dataset(met_s3_past) |> 
       #select(datetime, parameter, variable, prediction) |> 
-      filter(variable %in% c("precipitation_flux","air_temperature"),
+      dplyr::filter(variable %in% c("precipitation_flux","air_temperature"),
              ((datetime <= min_datetime  & variable == "precipitation_flux") | 
                 datetime < min_datetime  & variable == "air_temperature"),
              datetime > years_prior) |> 
@@ -63,7 +65,7 @@ run_inflow_model <- function(site_id,
       arrange(variable, datetime, ensemble)
     
     forecast_precip <- df_combined |> 
-      filter(variable == 'precipitation') |> 
+      dplyr::filter(variable == 'precipitation') |> 
       summarise(precip_hourly = median(prediction, na.rm = TRUE), .by = c("datetime")) |> # get the median hourly precip across all EMs
       mutate(date = lubridate::as_date(datetime)) |> 
       summarise(precip = sum(precip_hourly, na.rm = TRUE), .by = c("date")) |> # get the total precip for each day
@@ -71,7 +73,7 @@ run_inflow_model <- function(site_id,
       mutate(doy = lubridate::yday(date))
     
     forecast_temp <- df_combined |> 
-      filter(variable == 'temperature_2m') |> 
+      dplyr::filter(variable == 'temperature_2m') |> 
       summarise(temp_hourly = median(prediction, na.rm = TRUE), .by = c("datetime")) |> # get the median hourly temp across all EMs
       mutate(date = lubridate::as_date(datetime)) |> 
       summarise(temperature = median(temp_hourly, na.rm = TRUE), .by = c("date")) # get median temp across hours of the day
@@ -80,6 +82,7 @@ run_inflow_model <- function(site_id,
       right_join(forecast_temp, by = c('date'))
     
     
+    print('done setting up met data')
     
     ## RUN PREDICTIONS
     sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
@@ -90,7 +93,7 @@ run_inflow_model <- function(site_id,
     print('Running Flow Inflow Forecast')
     
     flow_targets <- inflow_targets |>
-      filter(variable == 'FLOW') |> 
+      dplyr::filter(variable == 'FLOW') |> 
       rename(date = datetime, total_flow = observation)
     
     flow_predictions <- run_inflow_flow_model(met_df = forecast_met, 
@@ -101,7 +104,7 @@ run_inflow_model <- function(site_id,
     ## RUN TEMPERATURE PREDICTIONS
     print('Running Temperature Inflow Forecast')
     temp_targets <- inflow_targets |>
-      filter(variable == 'TEMP') |> 
+      dplyr::filter(variable == 'TEMP') |> 
       rename(date = datetime, water_temperature = observation)
     
     temp_predictions <- run_inflow_temperature_model(met_df = forecast_met, 
@@ -112,7 +115,7 @@ run_inflow_model <- function(site_id,
     ## RUN SALINITY PREDICTIONS
     print('Running Salinity Inflow Forecast')
     salt_targets <- inflow_targets |>
-      filter(variable == 'SALT') |> 
+      dplyr::filter(variable == 'SALT') |> 
       rename(date = datetime, salinity = observation)
     
     salt_predictions <- run_inflow_salinity_model(met_df = forecast_met, 

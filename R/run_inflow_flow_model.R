@@ -13,7 +13,7 @@ run_inflow_flow_model <- function(met_df, met_past_df, met_combined, targets_df)
   
   ## set training as all data prior to start of forecast
   train_data <- forecast_drivers |> 
-    filter(date < reference_datetime)
+    dplyr::filter(date < reference_datetime)
   
   ## define folds in training data 
   folds <- vfold_cv(train_data, v = 5) # orginally set to 10
@@ -61,7 +61,7 @@ run_inflow_flow_model <- function(met_df, met_past_df, met_combined, targets_df)
   
   # make predictions for each ensemble member 
   forecast_precip_ens <- met_combined |> 
-    filter(variable == 'precipitation') |> 
+    dplyr::filter(variable == 'precipitation') |> 
     #summarise(precip_hourly = sum(prediction, na.rm = TRUE), .by = c("datetime","ensemble")) |> 
     mutate(date = lubridate::as_date(datetime)) |> 
     summarise(precip = sum(prediction, na.rm = TRUE), .by = c("date","ensemble")) |> 
@@ -72,7 +72,7 @@ run_inflow_flow_model <- function(met_df, met_past_df, met_combined, targets_df)
     mutate(doy = lubridate::yday(date))
   
   forecast_temp_ens <- met_combined |> 
-    filter(variable == 'temperature_2m') |> 
+    dplyr::filter(variable == 'temperature_2m') |> 
     mutate(date = lubridate::as_date(datetime)) |> 
     summarise(temperature = median(prediction, na.rm = TRUE), .by = c("date","ensemble"))
   
@@ -87,7 +87,7 @@ run_inflow_flow_model <- function(met_df, met_past_df, met_combined, targets_df)
   for (i in unique(forecast_met_ens$ensemble)){
     
     ens_df <- forecast_met_ens |> 
-      filter(ensemble == i)
+      dplyr::filter(ensemble == i)
     
     ens_inflow <- predict(xgboost_inflow_fit, new_data = ens_df)
     

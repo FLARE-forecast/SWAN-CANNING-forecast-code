@@ -12,7 +12,7 @@ forecast_drivers <- met_df |>
 ## CREATE MODEL AND FIT
 
 train_data <- forecast_drivers |> 
-  filter(date < reference_datetime)
+  dplyr::filter(date < reference_datetime)
 
 ## define folds in training data 
 folds <- vfold_cv(train_data, v = 5) # orginally set to 10
@@ -63,7 +63,7 @@ xgboost_inflow_fit <- fit(final_workflow, data = forecast_drivers)
 
 ## prepare met data to align with model
 create_historical_df <- met_combined |> 
-  filter(variable == 'temperature_2m') |> 
+  dplyr::filter(variable == 'temperature_2m') |> 
   mutate(date = as.Date(datetime)) |> 
   summarise(temperature = mean(prediction, na.rm = TRUE), .by = c("date",'ensemble')) |> 
   mutate(doy = lubridate::yday(date)) |> 
@@ -76,7 +76,7 @@ data_build <- data.frame()
 for (i in unique(create_historical_df$ensemble)){
   
   ens_df <- create_historical_df |> 
-    filter(ensemble == i)
+    dplyr::filter(ensemble == i)
   
   ens_inflow_temp <- predict(xgboost_inflow_fit, new_data = ens_df)
   

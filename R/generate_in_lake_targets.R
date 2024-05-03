@@ -1,3 +1,5 @@
+library(tidyverse)
+
 source('R/fct_awss3Connect_sensorcode.R')
 source('R/fct_awss3Connect.R')
 source('R/collect_insitu_targets.R')

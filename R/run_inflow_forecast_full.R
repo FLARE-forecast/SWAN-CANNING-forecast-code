@@ -33,6 +33,8 @@ site_identifier <- 'CANN'
 endpoint <- 'renc.osn.xsede.org'
 
 
+message('done initializing....starting forecasts')
+
 ## Run Forecast
 inflow_forecast <- run_inflow_model(site_id = site_identifier, 
                                     forecast_start_datetime = reference_datetime, 
