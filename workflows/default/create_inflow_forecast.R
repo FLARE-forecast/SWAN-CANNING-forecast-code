@@ -14,13 +14,21 @@ configure_run_file <- "configure_run.yml"
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
 ## get all necessary data
-#reference_datetime <- Sys.Date()  
-# reference_datetime <- config$run_config$forecast_start_datetime 
-# noaa_date <- reference_datetime - lubridate::days(1)
+#reference_datetime <- Sys.Date()
+#reference_datetime <- config$run_config$forecast_start_datetime
+#noaa_date <- reference_datetime - lubridate::days(1)
 
-forecast_start_datetime = config$run_config$forecast_start_datetime
-forecast_horizon = config$run_config$forecast_horizon
-inflow_model = config$inflow$forecast_inflow_model
+forecast_start_datetime <- Sys.Date()
+forecast_horizon <- 35
+inflow_model <- config$inflow$forecast_inflow_model
+noaa_date <- forecast_start_datetime - lubridate::days(1)
+
+
+#forecast_start_datetime = config$run_config$forecast_start_datetime
+#forecast_horizon = config$run_config$forecast_horizon
+#inflow_model = config$inflow$forecast_inflow_model
+
+noaa_date <- lubridate::as_datetime(forecast_start_datetime) - lubridate::days(1)
 
 lake_name_code <- config$location$site_id
 
@@ -49,6 +57,6 @@ if(use_s3_inflow){
 
 
 run_inflow_model(forecast_start_date = forecast_start_datetime, 
-                  site_identifier = lake_name_code, 
+                  site_id = lake_name_code, 
                   endpoint = inflow_endpoint, 
                   s3_save_path = inflow_s3)

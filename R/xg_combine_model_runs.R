@@ -1,6 +1,6 @@
 ## function for creating inflow forecasts using xgboost model
 
-run_inflow_model <- function(site_id, 
+xg_combine_model_runs <- function(site_id, 
                              forecast_start_datetime,
                              use_s3_inflow = FALSE, 
                              inflow_bucket = NULL,
@@ -11,7 +11,7 @@ run_inflow_model <- function(site_id,
   
   if((!is.null(forecast_start_datetime)) && (forecast_horizon > 0)){
     
-    print('inside of run_inflow_model')
+    #print('inside of run_inflow_model')
     
     forecast_date <- lubridate::as_date(forecast_start_datetime) - lubridate::days(1)
     forecast_hour <- lubridate::hour(forecast_start_datetime)
@@ -44,7 +44,7 @@ run_inflow_model <- function(site_id,
                                     endpoint_override = endpoint,
                                     anonymous = TRUE)
     
-    years_prior <- reference_datetime - lubridate::days(1825) # 5 years
+    years_prior <- forecast_start_datetime - lubridate::days(1825) # 5 years
     
     df_past <- arrow::open_dataset(met_s3_past) |> 
       #select(datetime, parameter, variable, prediction) |> 
@@ -86,43 +86,82 @@ run_inflow_model <- function(site_id,
     
     ## RUN PREDICTIONS
     sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
-    
-    inflow_targets <- read_csv(file.path(config_obs$file_path$targets_directory, config_obs$site_id, paste0(config_obs$site_id,"-targets-inflow.csv")), show_col_types = FALSE)
-    
+    inflow_targets <- read_csv(file.path(config_obs$file_path$targets_directory, config_obs$site_id, 
+                                         paste0(config_obs$site_id,"-targets-inflow.csv")), show_col_types = FALSE)
     ## RUN FLOW PREDICTIONS
     print('Running Flow Inflow Forecast')
     
-    flow_targets <- inflow_targets |>
+    flow_targets <- inflow_targets |> 
       dplyr::filter(variable == 'FLOW') |> 
-      rename(date = datetime, total_flow = observation)
+      rename(date = datetime)
     
-    flow_predictions <- run_inflow_flow_model(met_df = forecast_met, 
-                                              met_past_df = df_past, 
-                                              met_combined = df_combined, 
-                                              targets_df = flow_targets)
+    flow_drivers <- forecast_met |> 
+      left_join(flow_targets, by = c('date')) |> 
+      drop_na(observation)
+    
+    flow_training_df <- flow_drivers |> 
+      dplyr::filter(date < reference_datetime)
+    
+    flow_rec <- recipe(observation ~ precip + sevenday_precip + doy + temperature,
+                  data = flow_training_df)
+    
+    flow_predictions <- xg_run_inflow_model(train_data = flow_training_df, 
+                                             model_recipe = flow_rec,
+                                             met_combined = df_combined,
+                                             targets_df = flow_targets,
+                                             drivers_df = flow_drivers,
+                                             var_name = 'FLOW')  
     
     ## RUN TEMPERATURE PREDICTIONS
     print('Running Temperature Inflow Forecast')
+    
     temp_targets <- inflow_targets |>
       dplyr::filter(variable == 'TEMP') |> 
-      rename(date = datetime, water_temperature = observation)
+      rename(date = datetime)
     
-    temp_predictions <- run_inflow_temperature_model(met_df = forecast_met, 
-                                                     met_past_df = df_past, 
-                                                     met_combined = df_combined, 
-                                                     targets_df = temp_targets)
+    temp_drivers <- forecast_met |> 
+      left_join(flow_targets, by = c('date')) |> 
+      drop_na(observation)
+    
+    temp_training_df <- temp_drivers |> 
+      dplyr::filter(date < reference_datetime)
+    
+    temp_rec <- recipe(observation ~ doy + temperature,
+                       data = temp_training_df)
+    
+    temp_predictions <- xg_run_inflow_model(train_data = temp_training_df, 
+                                             model_recipe = temp_rec,
+                                             met_combined = temp_combined,
+                                             targets_df = temp_targets,
+                                             drivers_df = temp_drivers,
+                                             var_name = 'TEMP') 
     
     ## RUN SALINITY PREDICTIONS
     print('Running Salinity Inflow Forecast')
+    
     salt_targets <- inflow_targets |>
       dplyr::filter(variable == 'SALT') |> 
-      rename(date = datetime, salinity = observation)
+      rename(date = datetime)
     
-    salt_predictions <- run_inflow_salinity_model(met_df = forecast_met, 
-                                                  met_past_df = df_past, 
-                                                  met_combined = df_combined, 
-                                                  targets_df = salt_targets)
+    salt_drivers <- forecast_met |> 
+      left_join(flow_targets, by = c('date')) |> 
+      drop_na(observation)
     
+    salt_training_df <- salt_drivers |> 
+      dplyr::filter(date < reference_datetime)
+    
+    salt_rec <- recipe(observation ~ doy + temperature,
+                       data = salt_training_df)
+    
+    salt_predictions <- xg_run_inflow_model(train_data = salt_training_df, 
+                                             model_recipe = salt_rec,
+                                             met_combined = salt_combined,
+                                             targets_df = salt_targets,
+                                             drivers_df = salt_drivers,
+                                             var_name = 'SALT') 
+    
+    
+    ## COMBINE ALL INFLOW PREDICTIONS
     
     inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions)
     

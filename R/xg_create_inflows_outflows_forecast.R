@@ -6,13 +6,11 @@ source('R/fct_awss3Connect_sensorcode.R')
 source('R/fct_awss3Connect.R')
 
 source('R/run_inflow_model.R')
-source('R/run_inflow_flow_model.R')
-source('R/run_inflow_temperature_model.R')
-source('R/run_inflow_salinity_model.R')
+source('R/xgboost_inflow_function.R')
 
 lake_directory <- here::here()
 config_set_name <- "default"
-forecast_site <- c("CANN")
+#forecast_site <- c("CANN")
 configure_run_file <- "configure_run.yml"
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
@@ -36,7 +34,7 @@ endpoint <- 'renc.osn.xsede.org'
 message('done initializing....starting forecasts')
 
 ## Run Forecast
-inflow_forecast <- run_inflow_model(site_id = site_identifier, 
+inflow_forecast <- xg_combine_model_runs(site_id = site_identifier, 
                                     forecast_start_datetime = reference_datetime, 
                                     use_s3_inflow = config$run_config$use_s3, 
                                     inflow_bucket = config$s3$inflow_drivers$bucket,

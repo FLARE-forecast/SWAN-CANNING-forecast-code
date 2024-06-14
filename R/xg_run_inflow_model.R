@@ -1,28 +1,29 @@
-run_inflow_flow_model <- function(met_df, met_past_df, met_combined, targets_df){ #met_combined = df_combined, met_df = forecast_met
+xg_run_inflow_model <- function(train_data, model_recipe, met_combined, targets_df, drivers_df, var_name){
   
   ## join inflow data to met
   
-  forecast_drivers <- met_df |> 
-    left_join(targets_df, by = c('date')) |> 
-    drop_na(total_flow)
-  
+  # forecast_drivers <- met_df |> 
+  #   left_join(targets_df, by = c('date')) |> 
+  #   drop_na(total_flow)
+  # 
   # split <- initial_split(forecast_drivers, prop = 0.80, strata = NULL)
   # 
   # train_data <- training(split)
   # test_data <- testing(split)
   
   ## set training as all data prior to start of forecast
-  train_data <- forecast_drivers |> 
-    dplyr::filter(date < reference_datetime)
+  # train_data <- forecast_drivers |> 
+  #   dplyr::filter(date < reference_datetime)
   
   ## define folds in training data 
   folds <- vfold_cv(train_data, v = 5) # orginally set to 10
   
-  #set the recipe
-  rec <- recipe(total_flow ~ precip + sevenday_precip + doy + temperature,
-                data = train_data)
+  # #set the recipe
+  # rec <- recipe(total_flow ~ precip + sevenday_precip + doy + temperature,
+  #               data = train_data)
+  # 
   
-  rec_preprocess <- rec |> 
+  rec_preprocess <- model_recipe |> 
     step_normalize(all_numeric_predictors()) #|> 
   #step_dummy(doy)
   
@@ -57,7 +58,7 @@ run_inflow_flow_model <- function(met_df, met_past_df, met_combined, targets_df)
     finalize_workflow(best_hyperparameters)
   
   ## fit the model (using all available data (past and future) for now but could just use training data)
-  xgboost_inflow_fit <- fit(final_wrorkflow, data = forecast_drivers)
+  xgboost_inflow_fit <- fit(final_wrorkflow, data = drivers_df)
   
   # make predictions for each ensemble member 
   forecast_precip_ens <- met_combined |> 
@@ -105,12 +106,12 @@ run_inflow_flow_model <- function(met_df, met_past_df, met_combined, targets_df)
   ## overwrite predictions with observed data when present
   update_historical_df <- data_build |> 
     left_join(targets_df, by = c('date')) |> 
-    mutate(prediction = ifelse(!is.na(total_flow), total_flow, prediction)) |> 
+    mutate(prediction = ifelse(!is.na(observation), observation, prediction)) |> 
     mutate(model_id = config$inflow$forecast_inflow_model) |> 
     mutate(site_id = config$location$site_id) |> 
     mutate(reference_datetime = config$run_config$forecast_start_datetime) |> 
     mutate(family = 'ensemble') |> 
-    mutate(variable = 'FLOW') |> 
+    mutate(variable = var_name) |> 
     mutate(flow_type = 'inflow') |> 
     mutate(flow_number = 1) |> 
     rename(parameter = ensemble, datetime = date) |> 
