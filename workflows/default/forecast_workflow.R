@@ -52,7 +52,8 @@ while(noaa_ready){
   config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
   
   # ## run inflow forecast
-  source('R/run_inflow_forecast_full.R')
+  #source('R/run_inflow_forecast_full.R')
+  source('R/xg_create_inflows_outflows_forecast.R')
   
   # Run FLARE
   output <- FLAREr::run_flare(lake_directory = lake_directory,

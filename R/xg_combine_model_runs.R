@@ -131,7 +131,7 @@ xg_combine_model_runs <- function(site_id,
     
     temp_predictions <- xg_run_inflow_model(train_data = temp_training_df, 
                                              model_recipe = temp_rec,
-                                             met_combined = temp_combined,
+                                             met_combined = df_combined,
                                              targets_df = temp_targets,
                                              drivers_df = temp_drivers,
                                              var_name = 'TEMP') 
@@ -155,7 +155,7 @@ xg_combine_model_runs <- function(site_id,
     
     salt_predictions <- xg_run_inflow_model(train_data = salt_training_df, 
                                              model_recipe = salt_rec,
-                                             met_combined = salt_combined,
+                                             met_combined = df_combined,
                                              targets_df = salt_targets,
                                              drivers_df = salt_drivers,
                                              var_name = 'SALT') 
