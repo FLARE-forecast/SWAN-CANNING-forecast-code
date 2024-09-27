@@ -163,32 +163,64 @@ xg_combine_model_runs <- function(site_id,
     
     ## COMBINE ALL INFLOW PREDICTIONS
     
-    inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions)
+    inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions, var_prediction_build) |>
+      mutate(reference_datetime = as.Date(reference_datetime))
     
     outflow_df <- inflow_combined
     outflow_df$flow_type <- 'outflow'
     
-    flow_combined <- bind_rows(inflow_combined, outflow_df)
+    ## CREATE AND SAVE INFLOWS
+    historic_inflow <- inflow_combined |>
+      filter(datetime < forecast_date)
+    
+    arrow::write_dataset(historic_inflow, path = file.path(lake_directory,
+                                                           "drivers/inflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=CANN"))
+    
+    future_inflow <- inflow_combined |>
+      filter(datetime > forecast_date,
+             datetime <= as_date(forecast_date) + config$run_config$forecast_horizon)
+    
+    arrow::write_dataset(future_inflow,
+                         file.path(lake_directory, "drivers/inflow/future",paste0('model_id=',config$flows$forecast_inflow_model)),
+                         partitioning = c('reference_datetime', 'site_id'))
+    
+    ## CREATE AND SAVE OUTFLOWS
+    
+    historic_outflow <- outflow_df |>
+      filter(datetime < forecast_date)
+    
+    arrow::write_dataset(historic_outflow, path = file.path(lake_directory,
+                                                            "drivers/outflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=CANN"))
+    
+    future_outflow <- outflow_df |>
+      filter(datetime > forecast_date,
+             datetime <= as_date(forecast_date) + config$run_config$forecast_horizon)
+    
+    arrow::write_dataset(future_outflow,
+                         file.path(lake_directory, "drivers/outflow/future",paste0('model_id=',config$flows$forecast_inflow_model)),
+                         partitioning = c('reference_datetime', 'site_id'))
+    
+    #flow_combined <- bind_rows(inflow_combined, outflow_df)
     
     #flow_combined <- inflow_combined
     
-    if (forecast_horizon > 0) {
-      inflow_forecast_path <- file.path(inflow_model, site_id, forecast_hour, lubridate::as_date(forecast_start_datetime))
-    }else {
-      inflow_forecast_path <- NULL
-    }
+    # if (forecast_horizon > 0) {
+    #   inflow_forecast_path <- file.path(inflow_model, site_id, forecast_hour, lubridate::as_date(forecast_start_datetime))
+    # }else {
+    #   inflow_forecast_path <- NULL
+    # }
     
-    if(use_s3_inflow){
-      #FLAREr:::arrow_env_vars()
-      inflow_s3 <- arrow::s3_bucket(bucket = file.path(inflow_bucket, inflow_forecast_path), endpoint_override = inflow_endpoint)
-      #on.exit(FLAREr:::unset_arrow_vars(vars))
-    }else{
-      inflow_s3 <- arrow::SubTreeFileSystem$create(file.path(inflow_local_directory, inflow_forecast_path))
-    }
-    
-    arrow::write_dataset(flow_combined, path = inflow_s3)
-    
-    inflow_local_files <- list.files(file.path(inflow_local_directory, inflow_forecast_path), full.names = TRUE, recursive = TRUE)
+    # if(use_s3_inflow){
+    #   #FLAREr:::arrow_env_vars()
+    #   inflow_s3 <- arrow::s3_bucket(bucket = file.path(inflow_bucket, inflow_forecast_path), endpoint_override = inflow_endpoint)
+    #   #on.exit(FLAREr:::unset_arrow_vars(vars))
+    # }else{
+    #   inflow_s3 <- arrow::SubTreeFileSystem$create(file.path(inflow_local_directory, inflow_forecast_path))
+    # }
+    # inflow_s3 <- arrow::SubTreeFileSystem$create(file.path(inflow_local_directory, inflow_forecast_path))
+    # arrow::write_dataset(flow_combined, path = inflow_s3)
+    #
+    inflow_local_files <- list.files(file.path(inflow_local_directory), full.names = TRUE, recursive = TRUE)
     
     print("Inflow files processed...")
     

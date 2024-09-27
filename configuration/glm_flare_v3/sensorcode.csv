@@ -1,0 +1,36 @@
+Index,Stn_text_ref,Stn_name,s_graph_value,s_table_name,Group,Agency,Stn_code,Program,Lat,Long,Unit
+9655,SP,South Perth,Air Temperature Avg,sensor_repository_84745,met,DPIRD,SP,MET,-31.991043,115.886068,degC
+9656,SP,South Perth,Wind Speed avg,sensor_repository_84749,met,DPIRD,SP,MET,-31.991043,115.886068,km/h
+9657,SP,South Perth,Relative Humidity Avg,sensor_repository_00954,met,DPIRD,SP,MET,-31.991043,115.886068,%
+9658,SP,South Perth,Solar Irradiance,sensor_repository_00962,met,DPIRD,SP,MET,-31.991043,115.886068,W/m2
+9424,Canning River,Canning River,Flow (m3/s),sensor_repository_00804,hydro,DWER,616027,WIR,-32.092304541,116.016771762,m3/s
+9659,Anaconda Drive,Southern River - Anaconda Drive Huntingdale,Flow (m3/s),sensor_repository_00752,hydro,DWER,616092,WIR,-32.078341859,115.978809835,m3/s
+9479,Bacon_Downstream,Bacon_Downstream,Depth,sensor_repository_81681,wq,DBCA,6163441,SCE-OXY,-32.0252,115.9241,m
+9491,Bacon_Downstream,Bacon_Downstream,Dissolved Oxygen,sensor_repository_81682,wq,DBCA,6163441,SCE-OXY,-32.0252,115.9241,mg/L
+9503,Bacon_Downstream,Bacon_Downstream,Dissolved Oxygen (saturation),sensor_repository_81683,wq,DBCA,6163441,SCE-OXY,-32.0252,115.9241,%
+9515,Bacon_Downstream,Bacon_Downstream,Temperature,sensor_repository_81684,wq,DBCA,6163441,SCE-OXY,-32.0252,115.9241,degC
+9527,Bacon_Downstream,Bacon_Downstream,Salinity (ppt),sensor_repository_81685,wq,DBCA,6163441,SCE-OXY,-32.0252,115.9241,ppt
+9539,Bacon_Downstream,Bacon_Downstream,Conductivity @ 25 deg C,sensor_repository_81686,wq,DBCA,6163441,SCE-OXY,-32.0252,115.9241,uS/cm
+9551,Bacon_Downstream,Bacon_Downstream,pH,sensor_repository_81687,wq,DBCA,6163441,SCE-OXY,-32.0252,115.9241,NA
+9478,Bacon_Upstream,Bacon_Upstream,Depth,sensor_repository_81695,wq,DBCA,6163414,SCE-OXY,-32.020756,115.930439,m
+9490,Bacon_Upstream,Bacon_Upstream,Dissolved Oxygen,sensor_repository_81696,wq,DBCA,6163414,SCE-OXY,-32.020756,115.930439,mg/L
+9502,Bacon_Upstream,Bacon_Upstream,Dissolved Oxygen (saturation),sensor_repository_81697,wq,DBCA,6163414,SCE-OXY,-32.020756,115.930439,%
+9514,Bacon_Upstream,Bacon_Upstream,Temperature,sensor_repository_81698,wq,DBCA,6163414,SCE-OXY,-32.020756,115.930439,degC
+9526,Bacon_Upstream,Bacon_Upstream,Salinity (ppt),sensor_repository_81699,wq,DBCA,6163414,SCE-OXY,-32.020756,115.930439,ppt
+9538,Bacon_Upstream,Bacon_Upstream,Conductivity @ 25 deg C,sensor_repository_81700,wq,DBCA,6163414,SCE-OXY,-32.020756,115.930439,uS/cm
+9550,Bacon_Upstream,Bacon_Upstream,pH,sensor_repository_81701,wq,DBCA,6163414,SCE-OXY,-32.020756,115.930439,NA
+9477,Nicholson_Downstream,Nicholson_Downstream,Depth,sensor_repository_81765,wq,DBCA,6164685,SCE-OXY,-32.024562011,115.934890617,m
+9489,Nicholson_Downstream,Nicholson_Downstream,Dissolved Oxygen,sensor_repository_81766,wq,DBCA,6164685,SCE-OXY,-32.024562011,115.934890617,mg/L
+9501,Nicholson_Downstream,Nicholson_Downstream,Dissolved Oxygen (saturation),sensor_repository_81767,wq,DBCA,6164685,SCE-OXY,-32.024562011,115.934890617,%
+9513,Nicholson_Downstream,Nicholson_Downstream,Temperature,sensor_repository_81768,wq,DBCA,6164685,SCE-OXY,-32.024562011,115.934890617,degC
+9525,Nicholson_Downstream,Nicholson_Downstream,Salinity (ppt),sensor_repository_81769,wq,DBCA,6164685,SCE-OXY,-32.024562011,115.934890617,ppt
+9537,Nicholson_Downstream,Nicholson_Downstream,Conductivity @ 25 deg C,sensor_repository_81770,wq,DBCA,6164685,SCE-OXY,-32.024562011,115.934890617,uS/cm
+9549,Nicholson_Downstream,Nicholson_Downstream,pH,sensor_repository_81771,wq,DBCA,6164685,SCE-OXY,-32.024562011,115.934890617,NA
+9476,Nicholson_Upstream,Nicholson_Upstream,Depth,sensor_repository_81779,wq,DBCA,6164677,SCE-OXY,-32.0299118,115.94463472,m
+9488,Nicholson_Upstream,Nicholson_Upstream,Dissolved Oxygen,sensor_repository_81780,wq,DBCA,6164677,SCE-OXY,-32.0299118,115.94463472,mg/L
+9500,Nicholson_Upstream,Nicholson_Upstream,Dissolved Oxygen (saturation),sensor_repository_81781,wq,DBCA,6164677,SCE-OXY,-32.0299118,115.94463472,%
+9512,Nicholson_Upstream,Nicholson_Upstream,Temperature,sensor_repository_81782,wq,DBCA,6164677,SCE-OXY,-32.0299118,115.94463472,degC
+9524,Nicholson_Upstream,Nicholson_Upstream,Salinity (ppt),sensor_repository_81783,wq,DBCA,6164677,SCE-OXY,-32.0299118,115.94463472,ppt
+9536,Nicholson_Upstream,Nicholson_Upstream,Conductivity @ 25 deg C,sensor_repository_81784,wq,DBCA,6164677,SCE-OXY,-32.0299118,115.94463472,uS/cm
+9548,Nicholson_Upstream,Nicholson_Upstream,pH,sensor_repository_81785,wq,DBCA,6164677,SCE-OXY,-32.0299118,115.94463472,NA
+9553,Kent St Weir,,Water Level,sensor_repository_01047,hydro,BOM,509484,IDW,-32.021388,115.92113,m
