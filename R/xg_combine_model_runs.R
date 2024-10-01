@@ -72,11 +72,13 @@ xg_combine_model_runs <- function(site_id,
       mutate(sevenday_precip = RcppRoll::roll_sum(precip, n = 7, fill = NA,align = "right")) |> 
       mutate(doy = lubridate::yday(date))
     
-    forecast_temp <- df_combined |> 
-      dplyr::filter(variable == 'temperature_2m') |> 
+    forecast_temp <- df_combined |>
+      dplyr::filter(variable == 'temperature_2m') |>
       summarise(temp_hourly = median(prediction, na.rm = TRUE), .by = c("datetime")) |> # get the median hourly temp across all EMs
-      mutate(date = lubridate::as_date(datetime)) |> 
-      summarise(temperature = median(temp_hourly, na.rm = TRUE), .by = c("date")) # get median temp across hours of the day
+      mutate(date = lubridate::as_date(datetime)) |>
+      summarise(temperature = median(temp_hourly, na.rm = TRUE), .by = c("date")) |> # get median temp across hours of the day
+      mutate(threeday_temp = RcppRoll::roll_sum(temperature, n = 3, fill = NA,align = "right")) |>
+      right_join(observed_airtemp, by = c('date'))
     
     forecast_met <- forecast_precip |> 
       right_join(forecast_temp, by = c('date'))
@@ -211,7 +213,7 @@ xg_combine_model_runs <- function(site_id,
       filter(datetime < forecast_date)
     
     arrow::write_dataset(historic_inflow, path = file.path(lake_directory,
-                                                           "drivers/inflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=fcre"))
+                                                           "drivers/inflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=CANN"))
     
     future_inflow <- inflow_combined |>
       filter(datetime > forecast_date,
@@ -227,7 +229,7 @@ xg_combine_model_runs <- function(site_id,
       filter(datetime < forecast_date)
     
     arrow::write_dataset(historic_outflow, path = file.path(lake_directory,
-                                                            "drivers/outflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=fcre"))
+                                                            "drivers/outflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=CANN"))
     
     future_outflow <- outflow_df |>
       filter(datetime > forecast_date,
