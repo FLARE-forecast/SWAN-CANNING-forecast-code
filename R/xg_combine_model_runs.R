@@ -161,6 +161,42 @@ xg_combine_model_runs <- function(site_id,
                                              var_name = 'SALT') 
     
     
+    # ## ALL OTHER VARIABLES NEEDED FOR AED
+    # inflow_variables <- inflow_targets |>
+    #   filter(!(variable %in% c('TEMP','SALT','FLOW'))) |>
+    #   distinct(variable) |>
+    #   pull(variable)
+    # 
+    # var_prediction_build <- data.frame()
+    # 
+    # for (i in inflow_variables){
+    #   print(i)
+    #   
+    #   var_targets <- inflow_targets |>
+    #     dplyr::filter(variable == i) |>
+    #     rename(date = datetime)
+    #   
+    #   var_drivers <- forecast_met |>
+    #     left_join(var_targets, by = c('date')) |>
+    #     drop_na(observation)
+    #   
+    #   var_training_df <- var_drivers |>
+    #     dplyr::filter(date < reference_datetime)
+    #   
+    #   var_rec <- recipe(observation ~ doy,
+    #                     data = var_training_df)
+    #   
+    #   var_predictions <- xg_run_inflow_model(train_data = var_training_df,
+    #                                          model_recipe = var_rec,
+    #                                          met_combined = df_combined,
+    #                                          targets_df = var_targets,
+    #                                          drivers_df = var_drivers,
+    #                                          var_name = i)
+    #   
+    #   var_prediction_build <- dplyr::bind_rows(var_prediction_build, var_predictions)
+    # }
+    
+    
     ## COMBINE ALL INFLOW PREDICTIONS
     
     inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions, var_prediction_build) |>

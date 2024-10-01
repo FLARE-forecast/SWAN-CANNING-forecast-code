@@ -20,7 +20,7 @@ site_id <- "CANN"
 configure_run_file <- "configure_run.yml"
 config_set_name <- "glm_flare_v3"
 
-config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
+config <- FLAREr:::set_up_simulation(configure_run_file,lake_directory, config_set_name = config_set_name)
 
 if(fresh_run) unlink(file.path(lake_directory, "restart", "CANN", config$run_config$sim_name, configure_run_file))
 
@@ -30,7 +30,7 @@ source('workflows/glm_flare_v3/generate_targets.R')
 # Move targets to s3 bucket
 message("Successfully generated targets")
 
-FLAREr::put_targets(site_id =  config$location$site_id,
+FLAREr:::put_targets(site_id =  config$location$site_id,
                     cleaned_insitu_file = file.path(config$file_path$qaqc_data_directory, "CANN-targets-insitu.csv"),
                     cleaned_met_file = file.path(config$file_path$qaqc_data_directory,"CANN-targets-met.csv"),
                     cleaned_inflow_file = file.path(config$file_path$qaqc_data_directory,"CANN-targets-inflow.csv"),
