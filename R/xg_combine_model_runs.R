@@ -85,144 +85,136 @@ xg_combine_model_runs <- function(site_id,
     print('done setting up met data')
     
     ## RUN PREDICTIONS
-    sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
-    inflow_targets <- read_csv(file.path(lake_directory,'targets', config_obs$site_id, 
+    #sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
+    inflow_targets <- read_csv(file.path(lake_directory,'targets', config_obs$site_id,
                                          paste0(config_obs$site_id,"-targets-inflow.csv")), show_col_types = FALSE)
     ## RUN FLOW PREDICTIONS
     print('Running Flow Inflow Forecast')
     
-    flow_targets <- inflow_targets |> 
-      dplyr::filter(variable == 'FLOW') |> 
+    flow_targets <- inflow_targets |>
+      dplyr::filter(variable == 'FLOW') |>
       rename(date = datetime)
     
-    flow_drivers <- forecast_met |> 
-      left_join(flow_targets, by = c('date')) |> 
+    flow_drivers <- forecast_met |>
+      left_join(flow_targets, by = c('date')) |>
       drop_na(observation)
     
-    flow_training_df <- flow_drivers |> 
+    flow_training_df <- flow_drivers |>
       dplyr::filter(date < reference_datetime)
     
-    flow_rec <- recipe(observation ~ precip + sevenday_precip + doy + temperature,
-                  data = flow_training_df)
+    flow_rec <- recipe(observation ~ precip + sevenday_precip + doy + temperature, # daily_temperature, threeday_temp
+                       data = flow_training_df)
     
-    flow_predictions <- xg_run_inflow_model(train_data = flow_training_df, 
-                                             model_recipe = flow_rec,
-                                             met_combined = df_combined,
-                                             targets_df = flow_targets,
-                                             drivers_df = flow_drivers,
-                                             var_name = 'FLOW')  
+    ### RUN THIS FUNCTION TO FIND ERROR
+    flow_predictions <- xg_run_inflow_model(train_data = flow_training_df,
+                                            model_recipe = flow_rec,
+                                            met_combined = df_combined,
+                                            targets_df = flow_targets,
+                                            drivers_df = flow_drivers,
+                                            var_name = 'FLOW')
     
     ## RUN TEMPERATURE PREDICTIONS
     print('Running Temperature Inflow Forecast')
     
     temp_targets <- inflow_targets |>
-      dplyr::filter(variable == 'TEMP') |> 
+      dplyr::filter(variable == 'TEMP') |>
       rename(date = datetime)
     
-    temp_drivers <- forecast_met |> 
-      left_join(flow_targets, by = c('date')) |> 
+    temp_drivers <- forecast_met |>
+      left_join(temp_targets, by = c('date')) |>
       drop_na(observation)
     
-    temp_training_df <- temp_drivers |> 
+    temp_training_df <- temp_drivers |>
       dplyr::filter(date < reference_datetime)
     
-    temp_rec <- recipe(observation ~ doy + temperature,
+    temp_rec <- recipe(observation ~ doy + threeday_temp + temperature,
                        data = temp_training_df)
     
-    temp_predictions <- xg_run_inflow_model(train_data = temp_training_df, 
-                                             model_recipe = temp_rec,
-                                             met_combined = df_combined,
-                                             targets_df = temp_targets,
-                                             drivers_df = temp_drivers,
-                                             var_name = 'TEMP') 
+    temp_predictions <- xg_run_inflow_model(train_data = temp_training_df,
+                                            model_recipe = temp_rec,
+                                            met_combined = df_combined,
+                                            targets_df = temp_targets,
+                                            drivers_df = temp_drivers,
+                                            var_name = 'TEMP')
     
     ## RUN SALINITY PREDICTIONS
     print('Running Salinity Inflow Forecast')
     
     salt_targets <- inflow_targets |>
-      dplyr::filter(variable == 'SALT') |> 
+      dplyr::filter(variable == 'SALT') |>
       rename(date = datetime)
     
-    salt_drivers <- forecast_met |> 
-      left_join(flow_targets, by = c('date')) |> 
+    salt_drivers <- forecast_met |>
+      left_join(salt_targets, by = c('date')) |>
       drop_na(observation)
     
-    salt_training_df <- salt_drivers |> 
+    salt_training_df <- salt_drivers |>
       dplyr::filter(date < reference_datetime)
     
-    salt_rec <- recipe(observation ~ doy + temperature,
+    salt_rec <- recipe(observation ~ doy + threeday_temp,
                        data = salt_training_df)
     
-    salt_predictions <- xg_run_inflow_model(train_data = salt_training_df, 
-                                             model_recipe = salt_rec,
+    salt_predictions <- xg_run_inflow_model(train_data = salt_training_df,
+                                            model_recipe = salt_rec,
+                                            met_combined = df_combined,
+                                            targets_df = salt_targets,
+                                            drivers_df = salt_drivers,
+                                            var_name = 'SALT')
+    
+    
+    ## ALL OTHER VARIABLES NEEDED FOR AED
+    inflow_variables <- inflow_targets |>
+      filter(!(variable %in% c('TEMP','SALT','FLOW'))) |>
+      distinct(variable) |>
+      pull(variable)
+    
+    var_prediction_build <- data.frame()
+    
+    for (i in inflow_variables){
+      print(i)
+      
+      var_targets <- inflow_targets |>
+        dplyr::filter(variable == i) |>
+        rename(date = datetime)
+      
+      var_drivers <- forecast_met |>
+        left_join(var_targets, by = c('date')) |>
+        drop_na(observation)
+      
+      var_training_df <- var_drivers |>
+        dplyr::filter(date < reference_datetime)
+      
+      var_rec <- recipe(observation ~ doy,
+                        data = var_training_df)
+      
+      var_predictions <- xg_run_inflow_model(train_data = var_training_df,
+                                             model_recipe = var_rec,
                                              met_combined = df_combined,
-                                             targets_df = salt_targets,
-                                             drivers_df = salt_drivers,
-                                             var_name = 'SALT') 
-    
-    
-    # ## ALL OTHER VARIABLES NEEDED FOR AED
-    # inflow_variables <- inflow_targets |>
-    #   filter(!(variable %in% c('TEMP','SALT','FLOW'))) |>
-    #   distinct(variable) |>
-    #   pull(variable)
-    # 
-    # var_prediction_build <- data.frame()
-    # 
-    # for (i in inflow_variables){
-    #   print(i)
-    #   
-    #   var_targets <- inflow_targets |>
-    #     dplyr::filter(variable == i) |>
-    #     rename(date = datetime)
-    #   
-    #   var_drivers <- forecast_met |>
-    #     left_join(var_targets, by = c('date')) |>
-    #     drop_na(observation)
-    #   
-    #   var_training_df <- var_drivers |>
-    #     dplyr::filter(date < reference_datetime)
-    #   
-    #   var_rec <- recipe(observation ~ doy,
-    #                     data = var_training_df)
-    #   
-    #   var_predictions <- xg_run_inflow_model(train_data = var_training_df,
-    #                                          model_recipe = var_rec,
-    #                                          met_combined = df_combined,
-    #                                          targets_df = var_targets,
-    #                                          drivers_df = var_drivers,
-    #                                          var_name = i)
-    #   
-    #   var_prediction_build <- dplyr::bind_rows(var_prediction_build, var_predictions)
-    # }
+                                             targets_df = var_targets,
+                                             drivers_df = var_drivers,
+                                             var_name = i)
+      
+      var_prediction_build <- dplyr::bind_rows(var_prediction_build, var_predictions)
+    }
     
     
     ## COMBINE ALL INFLOW PREDICTIONS
-    print(nrow(flow_predictions))
-    print(nrow(temp_predictions))
-    print(nrow(salt_predictions))
     
-    inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions) |> #, var_prediction_build) |>
+    inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions, var_prediction_build) |>
       mutate(reference_datetime = as.Date(reference_datetime))
     
     outflow_df <- inflow_combined
     outflow_df$flow_type <- 'outflow'
     
     ## CREATE AND SAVE INFLOWS
-    
-    print('saving historic inflows')
-    
-    print(nrow(inflow_combined))
-    print(names(inflow_combined))
-    
     historic_inflow <- inflow_combined |>
-      dplyr::filter(datetime < forecast_date)
+      filter(datetime < forecast_date)
     
     arrow::write_dataset(historic_inflow, path = file.path(lake_directory,
-                                                           "drivers/inflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=CANN"))
-    print('saving future inflows')
+                                                           "drivers/inflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=fcre"))
+    
     future_inflow <- inflow_combined |>
-      dplyr::filter(datetime > forecast_date,
+      filter(datetime > forecast_date,
              datetime <= as_date(forecast_date) + config$run_config$forecast_horizon)
     
     arrow::write_dataset(future_inflow,
@@ -231,15 +223,14 @@ xg_combine_model_runs <- function(site_id,
     
     ## CREATE AND SAVE OUTFLOWS
     
-    print('saving historic outflow')
     historic_outflow <- outflow_df |>
-      dplyr::filter(datetime < forecast_date)
+      filter(datetime < forecast_date)
     
     arrow::write_dataset(historic_outflow, path = file.path(lake_directory,
-                                                            "drivers/outflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=CANN"))
-    print('saving future outflow')
+                                                            "drivers/outflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=fcre"))
+    
     future_outflow <- outflow_df |>
-      dplyr::filter(datetime > forecast_date,
+      filter(datetime > forecast_date,
              datetime <= as_date(forecast_date) + config$run_config$forecast_horizon)
     
     arrow::write_dataset(future_outflow,
@@ -274,7 +265,7 @@ xg_combine_model_runs <- function(site_id,
   }else{
     message("nothing to forecast")
     inflow_local_files <- NULL
-  }# end if statement 
+  }# end if statement
   
   return(inflow_local_files)
 }
