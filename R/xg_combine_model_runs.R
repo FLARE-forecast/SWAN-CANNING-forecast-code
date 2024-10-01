@@ -16,6 +16,15 @@ xg_combine_model_runs <- function(site_id,
     forecast_date <- lubridate::as_date(forecast_start_datetime) - lubridate::days(1)
     forecast_hour <- lubridate::hour(forecast_start_datetime)
     
+    ## pull in observed met data
+    observed_airtemp <- read_csv(file.path(lake_directory,'targets', config_obs$site_id,
+                                           paste0(config_obs$site_id,'-targets-met.csv')), show_col_types = FALSE) |>
+      filter(variable == 'air_temperature') |>
+      mutate(date = as.Date(datetime),
+             temp = observation) |> 
+             #temp = observation - 273.15) |>
+      summarise(daily_temperature = median(temp, na.rm = TRUE), .by = c("date"))
+    
     ## pull in future NOAA data 
     
     met_s3_future <- arrow::s3_bucket(file.path("bio230121-bucket01/flare/drivers/met/gefs-v12/stage2",paste0("reference_datetime=",noaa_date),paste0("site_id=",site_id)),
