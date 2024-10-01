@@ -5,8 +5,8 @@ library(xgboost)
 # source('R/fct_awss3Connect_sensorcode.R')
 # source('R/fct_awss3Connect.R')
 # 
-# source('R/xg_run_inflow_model.R')
-# source('R/xg_combine_model_runs.R')
+source('R/xg_run_inflow_model.R')
+source('R/xg_combine_model_runs.R')
 
 lake_directory <- here::here()
 config_set_name <- "glm_flare_v3"
