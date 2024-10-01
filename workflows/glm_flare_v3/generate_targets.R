@@ -12,13 +12,13 @@ source('R/collect_profile_targets.R')
 # configure_run_file <- "configure_run.yml"
 # config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
-config_obs <- FLAREr::initialize_obs_processing(lake_directory, 
-                                                observation_yml = "observation_processing.yml", 
-                                                config_set_name = config_set_name)
+# config_obs <- FLAREr::initialize_obs_processing(lake_directory, 
+#                                                 observation_yml = "observation_processing.yml", 
+#                                                 config_set_name = config_set_name)
 
 dir.create(file.path(lake_directory, "targets", config$location$site_id), showWarnings = FALSE)
 
-sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
+sensorcode_df <- read_csv('configuration/glm_flare_v3/sensorcode.csv', show_col_types = FALSE)
 
 
 ## RUN CODE TO GENERATE DATA

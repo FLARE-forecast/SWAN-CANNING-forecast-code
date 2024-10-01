@@ -22,7 +22,7 @@ Sys.setenv("AWS_DEFAULT_REGION" = "renc",
            "SC_S3_ENDPOINT" = "projects.pawsey.org.au")
 
 #' Source the R files in the repository
-walk(list.files(file.path(lake_directory, "R"), full.names = TRUE), source)
+#walk(list.files(file.path(lake_directory, "R"), full.names = TRUE), source)
 
 config_obs <- yaml::read_yaml(file.path(lake_directory,'configuration',config_set_name,'observation_processing.yml'))
 configure_run_file <- "configure_run.yml"
