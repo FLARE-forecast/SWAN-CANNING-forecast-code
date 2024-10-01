@@ -2,9 +2,9 @@
 &glm_setup
    sim_name        = 'CANN'
    max_layers      =  500
-   min_layer_vol = 1.0
-   min_layer_thick = 0.5
-   max_layer_thick = 7
+   min_layer_vol = 0.025
+   min_layer_thick = 0.2
+   max_layer_thick = 0.8
    non_avg         = .true.
 /
 
@@ -84,10 +84,10 @@
 
 !-------------------------------------------------------------------------------
 &init_profiles          
-    num_depths   = 12
+    num_heights   = 12
 	  lake_depth   = 6.0
     !the_depths   = 1.0,3.0,4.0,6.0
-	  the_depths = 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4, 4.5, 5.0, 5.5, 6.0 
+	  the_heights = 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4, 4.5, 5.0, 5.5, 6.0 
 	  !num_heights = 4
     !the_heights = 1.0  ,  3.0,  4.0,  6.0
     the_temps    = 10.20,10.20,10.20,10.20
@@ -101,6 +101,7 @@
     blue_ice_thickness = 0
     avg_surf_temp = 6
     restart_variables = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    restart_mixer = 0
 /
 
 !-------------------------------------------------------------------------------
