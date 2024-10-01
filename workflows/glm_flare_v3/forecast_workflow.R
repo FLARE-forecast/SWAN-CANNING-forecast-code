@@ -4,6 +4,10 @@ library(tidymodels)
 library(xgboost)
 library(RcppRoll)
 
+remotes::install_github('flare-forecast/FLAREr@single-parameter')
+remotes::install_github("rqthomas/GLM3r")
+Sys.setenv('GLM_PATH'='GLM3r')
+
 fresh_run <- FALSE
 
 Sys.setenv("AWS_DEFAULT_REGION" = "renc",
@@ -11,15 +15,11 @@ Sys.setenv("AWS_DEFAULT_REGION" = "renc",
            "USE_HTTPS" = TRUE,
            "SC_S3_ENDPOINT" = "projects.pawsey.org.au")
 
-lake_directory <- here::here()
-setwd(lake_directory)
-forecast_site <- c("CANN")
-site_id <- "CANN"
+#' Source the R files in the repository
+walk(list.files(file.path(lake_directory, "R"), full.names = TRUE), source)
 
-#configure_run_file <- paste0("configure_run_",forecast_site,".yml")
+config_obs <- yaml::read_yaml(file.path(lake_directory,'configuration',config_set_name,'observation_processing.yml'))
 configure_run_file <- "configure_run.yml"
-config_set_name <- "glm_flare_v3"
-
 config <- FLAREr:::set_up_simulation(configure_run_file,lake_directory, config_set_name = config_set_name)
 
 if(fresh_run) unlink(file.path(lake_directory, "restart", "CANN", config$run_config$sim_name, configure_run_file))
@@ -51,9 +51,9 @@ while(noaa_ready){
   setwd(lake_directory)
   config <- FLAREr:::set_up_simulation(configure_run_file,lake_directory, config_set_name = config_set_name)
   
-  # ## run inflow forecast
-  #source('R/run_inflow_forecast_full.R')
-  source('workflows/glm_flare_v3/xg_create_inflows_outflows_forecast.R')
+  message("Generating inflow forecast")
+  #source(file.path(lake_directory, "workflows", config_set_name, "02_run_inflow_forecast.R"))
+  source(file.path(lake_directory, "workflows", config_set_name, "xgboost_inflow.R"))
   
   # Run FLARE
   output <- FLAREr:::run_flare(lake_directory = lake_directory,
@@ -99,7 +99,7 @@ while(noaa_ready){
                                            use_s3 = TRUE,
                                            bucket = config$s3$scores$bucket,
                                            endpoint = config$s3$scores$endpoint,
-                                           local_directory = './FCRE-forecast-code/scores/fcre',
+                                           local_directory = './SWAN-CANNING-forecast-code/scores/fcre',
                                            variable_types = c("state","parameter"))
   
   forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)
