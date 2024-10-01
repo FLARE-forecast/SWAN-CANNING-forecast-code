@@ -211,6 +211,10 @@ xg_combine_model_runs <- function(site_id,
     ## CREATE AND SAVE INFLOWS
     
     print('saving historic inflows')
+    
+    print(nrow(inflow_combined))
+    print(names(inflow_combined))
+    
     historic_inflow <- inflow_combined |>
       filter(datetime < forecast_date)
     
@@ -227,12 +231,13 @@ xg_combine_model_runs <- function(site_id,
     
     ## CREATE AND SAVE OUTFLOWS
     
+    print('saving historic outflow')
     historic_outflow <- outflow_df |>
       filter(datetime < forecast_date)
     
     arrow::write_dataset(historic_outflow, path = file.path(lake_directory,
                                                             "drivers/outflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=CANN"))
-    
+    print('saving future outflow')
     future_outflow <- outflow_df |>
       filter(datetime > forecast_date,
              datetime <= as_date(forecast_date) + config$run_config$forecast_horizon)
