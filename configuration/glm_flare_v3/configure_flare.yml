@@ -63,13 +63,13 @@ default_init:
 flows:
    include_inflow: TRUE
    include_outflow: TRUE
-   forecast_inflow_model: inflow-xbgoost
+   forecast_inflow_model: inflow-xgboost
    #observed_inflow_filename: NA
    #inflow_variables: NA
-   historical_inflow_model: historic/model_id=inflow-xbgoost/site_id={site_id}
-   future_inflow_model: future/model_id=inflow-xbgoost/reference_datetime={reference_date}/site_id={site_id}
-   historical_outflow_model: historic/model_id=inflow-xbgoost/site_id={site_id}
-   future_outflow_model: future/model_id=inflow-xbgoost/reference_datetime={reference_date}/site_id={site_id}
+   historical_inflow_model: historic/model_id=inflow-xgboost/site_id={site_id}
+   future_inflow_model: future/model_id=inflow-xgboost/reference_datetime={reference_date}/site_id={site_id}
+   historical_outflow_model: historic/model_id=inflow-xgboost/site_id={site_id}
+   future_outflow_model: future/model_id=inflow-xgboost/reference_datetime={reference_date}/site_id={site_id}
    local_inflow_directory: drivers/inflow
    local_outflow_directory: drivers/outflow
    use_flows_s3: no
