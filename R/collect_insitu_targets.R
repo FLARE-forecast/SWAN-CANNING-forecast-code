@@ -1,13 +1,13 @@
 
 collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   
-  print(names(obs_download))
+  #print(names(obs_download))
   
   # remove duplicates 
   obs_dedup <- obs_download |>
   distinct(Height, variable, datetime, .keep_all = TRUE)
   
-  print('obs_dedup')
+  #print('obs_dedup')
   print(names(obs_dedup))
   
   obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(salt = `Salinity (ppt)`, temperature = 'Temperature')
@@ -19,8 +19,8 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   ## assign columns
   obs_df$site_id <- site_location
   
-  print('obs_df')
-  print(names(obs_df))
+  #print('obs_df')
+  #print(names(obs_df))
   
   group_insitu <- obs_df |> 
     mutate(Date = as.Date(datetime)) |> 
@@ -30,8 +30,8 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   group_insitu <- group_insitu |> 
     dplyr::filter(hour == 0)
   
-  print('group_insitu')
-  print(names(group_insitu))
+  #print('group_insitu')
+  #print(names(group_insitu))
   
   cleaned_insitu_file <- group_insitu |> # only want midnight observations for the daily value
     group_by(Date, variable) |> 

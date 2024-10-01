@@ -93,5 +93,5 @@ inflow_insitu_flow_df <- daily_inflow_combined |>
 combined_data <- bind_rows(inflow_profile_depth_avg, inflow_insitu_flow_df, mock_inflow_insitu_df) ## ADD TEMP/SALT INSITU DATA HERE ONCE FOUND
 
 write_csv(combined_data,
-          file.path(config_obs$file_path$targets_directory, config_obs$site_id, paste0(config_obs$site_id,"-targets-inflow.csv")))
+          file.path(lake_directory,'targets', config_obs$site_id, paste0(config_obs$site_id,"-targets-inflow.csv")))
 

@@ -32,4 +32,4 @@ cleaned_met_file <- met_dedup |>
   select(datetime, site_id, observation, variable)
 
 write_csv(cleaned_met_file,
-          file.path(config_obs$file_path$targets_directory, config_obs$site_id,paste0(config_obs$site_id,"-targets-met.csv")))
+          file.path(lake_directory,'targets', config_obs$site_id,paste0(config_obs$site_id,"-targets-met.csv")))
