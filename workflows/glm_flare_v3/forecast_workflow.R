@@ -4,7 +4,8 @@ library(tidymodels)
 library(xgboost)
 library(RcppRoll)
 
-remotes::install_github('flare-forecast/FLAREr@single-parameter')
+#remotes::install_github('flare-forecast/FLAREr@single-parameter')
+remotes::install_github('flare-forecast/FLAREr')
 remotes::install_github("rqthomas/GLM3r")
 Sys.setenv('GLM_PATH'='GLM3r')
 
