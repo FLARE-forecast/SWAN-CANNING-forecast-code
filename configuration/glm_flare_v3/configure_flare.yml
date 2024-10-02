@@ -99,7 +99,7 @@ output_settings:
    variables_in_scores: [state, parameter]
    generate_plots: FALSE
    diagnostics_daily:
-    csv_names: ['Tot Inflow Vol', 'Tot Outflow Vol', 'Overflow Vol', 'temp', 'salt']
+    names: ['Tot Inflow Vol', 'Tot Outflow Vol', 'Overflow Vol', 'temp', 'salt']
     save_names: ['inflow', 'outflow','overflow', 'temp_outflow', 'salt_outflow']
-    csv_file: ['lake.csv', 'lake.csv','lake.csv', 'outlet_00.csv','outlet_00.csv']
+    file: ['lake.csv', 'lake.csv','lake.csv', 'outlet_00.csv','outlet_00.csv']
     depth: [.na, .na, .na, .na, .na]
