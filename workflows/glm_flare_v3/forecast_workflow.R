@@ -53,6 +53,8 @@ inflow_endpoint <- config$s3$inflow_drivers$endpoint
 use_s3_inflow <- config$inflow$use_forecasted_inflow
 
 noaa_ready <- TRUE
+source('./R/generate_forecast_score_arrow.R')
+
 while(noaa_ready){
   
   setwd(lake_directory)
@@ -98,8 +100,6 @@ while(noaa_ready){
   targets_df <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")),show_col_types = FALSE)
   
   #combined_forecasts <- arrow::open_dataset('./forecasts/parquet/site_id=ccre/model_id=glm_flare_v3/reference_date=2024-09-03/part-0.parquet') |> collect()
-  
-  
   
   scoring <- generate_forecast_score_arrow(targets_df = targets_df,
                                            forecast_df = combined_forecasts, ## only works if dataframe returned from output
