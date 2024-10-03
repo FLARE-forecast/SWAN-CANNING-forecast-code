@@ -39,7 +39,7 @@ mock_inflow_insitu_df <- collect_insitu_targets(obs_download = mock_inflow_obs_d
                                          site_location = 'CANN',
                                          assign_depth = 1.5)
 mock_inflow_insitu_df <- mock_inflow_insitu_df |>
-  select(-depth)
+  select(datetime, site_id, variable, observation)
 
 mock_inflow_insitu_df$variable <- ifelse(mock_inflow_insitu_df$variable == 'temperature', 'TEMP', mock_inflow_insitu_df$variable)
 mock_inflow_insitu_df$variable <- ifelse(mock_inflow_insitu_df$variable == 'salt', 'SALT', mock_inflow_insitu_df$variable)
@@ -90,7 +90,11 @@ inflow_insitu_flow_df <- daily_inflow_combined |>
 
 
 ## combine insitu data with profile data
-combined_data <- bind_rows(inflow_profile_depth_avg, inflow_insitu_flow_df, mock_inflow_insitu_df) ## ADD TEMP/SALT INSITU DATA HERE ONCE FOUND
+combined_data <- bind_rows(inflow_profile_depth_avg, inflow_insitu_flow_df, mock_inflow_insitu_df)  |> ## ADD TEMP/SALT INSITU DATA HERE ONCE FOUND
+  summarise(observation = mean(observation, na.rm = TRUE), .by = c("datetime","variable")) |>
+  mutate(site_id = 'CANN')
+  
+
 
 write_csv(combined_data,
           file.path(lake_directory,'targets', config_obs$site_id, paste0(config_obs$site_id,"-targets-inflow.csv")))
