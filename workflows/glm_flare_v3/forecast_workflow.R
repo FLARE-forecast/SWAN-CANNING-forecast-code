@@ -52,7 +52,9 @@ inflow_bucket <- config$s3$inflow_drivers$bucket
 inflow_endpoint <- config$s3$inflow_drivers$endpoint
 use_s3_inflow <- config$inflow$use_forecasted_inflow
 
-noaa_ready <- TRUE
+noaa_ready <- check_noaa_present(lake_directory,
+                                          configure_run_file = configure_run_file,
+                                          config_set_name = config_set_name)
 source('./R/generate_forecast_score_arrow.R')
 
 while(noaa_ready){
