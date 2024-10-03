@@ -31,31 +31,37 @@ config <- FLAREr:::set_up_simulation(configure_run_file,lake_directory, config_s
 
 if(fresh_run) unlink(file.path(lake_directory, "restart", "CANN", config$run_config$sim_name, configure_run_file))
 
-# Read in the targets
-source('workflows/glm_flare_v3/generate_targets.R')
-
-# Move targets to s3 bucket
-message("Successfully generated targets")
-
-FLAREr:::put_targets(site_id =  config$location$site_id,
-                    cleaned_insitu_file = file.path(config$file_path$qaqc_data_directory, "CANN-targets-insitu.csv"),
-                    cleaned_met_file = file.path(config$file_path$qaqc_data_directory,"CANN-targets-met.csv"),
-                    cleaned_inflow_file = file.path(config$file_path$qaqc_data_directory,"CANN-targets-inflow.csv"),
-                    use_s3 = config$run_config$use_s3,
-                    config = config)
-
-## initialize info for inflow model
-forecast_horizon <- config$run_config$forecast_horizon
-inflow_model <- config$inflow$forecast_inflow_model
-lake_name_code <- config$location$site_id
-inflow_bucket <- config$s3$inflow_drivers$bucket
-inflow_endpoint <- config$s3$inflow_drivers$endpoint
-use_s3_inflow <- config$inflow$use_forecasted_inflow
-
 noaa_ready <- FLAREr::check_noaa_present(lake_directory,
-                                          configure_run_file = configure_run_file,
-                                          config_set_name = config_set_name)
-source('./R/generate_forecast_score_arrow.R')
+                                         configure_run_file = configure_run_file,
+                                         config_set_name = config_set_name)
+
+if(noaa_ready){
+  # Read in the targets
+  source('workflows/glm_flare_v3/generate_targets.R')
+  
+  # Move targets to s3 bucket
+  message("Successfully generated targets")
+  
+  FLAREr:::put_targets(site_id =  config$location$site_id,
+                       cleaned_insitu_file = file.path(config$file_path$qaqc_data_directory, "CANN-targets-insitu.csv"),
+                       cleaned_met_file = file.path(config$file_path$qaqc_data_directory,"CANN-targets-met.csv"),
+                       cleaned_inflow_file = file.path(config$file_path$qaqc_data_directory,"CANN-targets-inflow.csv"),
+                       use_s3 = config$run_config$use_s3,
+                       config = config)
+  
+  ## initialize info for inflow model
+  forecast_horizon <- config$run_config$forecast_horizon
+  inflow_model <- config$inflow$forecast_inflow_model
+  lake_name_code <- config$location$site_id
+  inflow_bucket <- config$s3$inflow_drivers$bucket
+  inflow_endpoint <- config$s3$inflow_drivers$endpoint
+  use_s3_inflow <- config$inflow$use_forecasted_inflow
+  
+  
+  source('./R/generate_forecast_score_arrow.R')
+}
+
+
 
 while(noaa_ready){
   
@@ -68,8 +74,8 @@ while(noaa_ready){
   
   # Run FLARE
   output <- FLAREr:::run_flare(lake_directory = lake_directory,
-                              configure_run_file = configure_run_file,
-                              config_set_name = config_set_name)
+                               configure_run_file = configure_run_file,
+                               config_set_name = config_set_name)
   
   message("Scoring forecasts")
   forecast_s3 <- arrow::s3_bucket(bucket = config$s3$forecasts_parquet$bucket, endpoint_override = config$s3$forecasts_parquet$endpoint, anonymous = TRUE)
