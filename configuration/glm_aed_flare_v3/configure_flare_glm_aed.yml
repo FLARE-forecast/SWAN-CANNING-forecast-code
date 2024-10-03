@@ -1,0 +1,94 @@
+s3:
+  drivers:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/drivers/met
+  inflow_drivers:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/drivers/inflow/CANN
+  outflow_drivers:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/drivers/outflow/CANN
+  targets:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/targets
+  forecasts:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/forecasts/netcdf
+  forecasts_parquet:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/forecasts/parquet
+  restart:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/restart
+  scores:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/scores/parquet
+location:
+   site_id: CANN
+   name: Swan-Canning River
+   latitude: -32   #Degrees North
+   longitude: 116  #Degrees East
+da_setup:
+    da_method: enkf
+    par_fit_method: perturb_const
+    ensemble_size:  217
+    localization_distance: .na #distance in meters were covariances in the model error are used
+    no_negative_states: TRUE
+    assimilate_first_step: FALSE
+    use_obs_constraint: TRUE
+    obs_filename: CANN-targets-insitu.csv
+model_settings:
+   ncore: 4
+   model_name: glm
+   base_GLM_nml: glm3.nml
+   max_model_layers: 100
+   modeled_depths: [0.0, 0.50, 1.0,
+                    1.50, 2.0,
+                    2.50, 3.0,
+                    3.50, 4.0,
+                    4.50, 5.0,
+                    5.50, 6.0]
+   par_config_file: parameter_calibration_config_aed.csv
+   obs_config_file: observations_config_aed.csv
+   states_config_file: states_config_aed.csv
+   depth_model_sd_config_file: depth_model_sd.csv
+default_init:
+   lake_depth: 6.0  #not a modeled state
+   temp: [10.20,10.20,10.20,10.20]
+   temp_depths: [1.5,3.0,4.5,6.0]
+   salinity: 0.25
+   snow_thickness: 0.0
+   white_ice_thickness: 0.0
+   blue_ice_thickness: 0.0
+flows:
+   include_inflow: TRUE
+   include_outflow: TRUE
+   historical_inflow_model: historic/model_id=inflow-xgboost/site_id={site_id}
+   future_inflow_model: future/model_id=inflow-xgboost/reference_datetime={reference_date}/site_id={site_id}
+   historical_outflow_model: historic/model_id=inflow-xgboost/site_id={site_id}
+   future_outflow_model: future/model_id=inflow-xgboost/reference_datetime={reference_date}/site_id={site_id}
+   local_inflow_directory: drivers/inflow
+   local_outflow_directory: drivers/outflow
+   use_flows_s3: no
+   use_ler_vars: no
+met:
+   future_met_model: 'gefs-v12/stage2/reference_datetime={reference_date}/site_id={site_id}'
+   historical_met_model: 'gefs-v12/stage3/site_id={site_id}'
+   historical_met_use_s3: TRUE
+   future_met_use_s3: TRUE
+   use_openmeteo: FALSE
+   local_met_directory: 'drivers'
+   use_forecasted_met: TRUE
+   use_ler_vars: FALSE
+   forecast_lag_days: 1
+uncertainty:
+   observation: TRUE
+   process: TRUE
+   weather: TRUE
+   initial_condition: TRUE
+   parameter: TRUE
+   met_downscale: TRUE
+   inflow: TRUE
+output_settings:
+   diagnostics_names:  [extc]
+   generate_plots: FALSE

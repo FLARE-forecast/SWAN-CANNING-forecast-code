@@ -13,7 +13,7 @@ lake_directory <- here::here()
 setwd(lake_directory)
 forecast_site <- "CANN"
 configure_run_file <- "configure_run.yml"
-config_set_name <- "glm_flare_v3"
+config_set_name <- "glm_aed_flare_v3"
 
 fresh_run <- FALSE
 
