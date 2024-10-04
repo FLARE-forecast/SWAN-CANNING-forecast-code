@@ -37,7 +37,7 @@ noaa_ready <- FLAREr::check_noaa_present(lake_directory,
 
 if(noaa_ready){
   # Read in the targets
-  source('workflows/glm_flare_v3/generate_targets.R')
+  source('workflows/glm_aed_flare_v3/generate_targets_aed.R')
   
   # Move targets to s3 bucket
   message("Successfully generated targets")
@@ -70,7 +70,7 @@ while(noaa_ready){
   
   message("Generating inflow forecast")
   #source(file.path(lake_directory, "workflows", config_set_name, "02_run_inflow_forecast.R"))
-  source(file.path(lake_directory, "workflows", config_set_name, "xgboost_inflow.R"))
+  source(file.path(lake_directory, "workflows", config_set_name, "xgboost_inflow_aed.R"))
   
   # Run FLARE
   output <- FLAREr:::run_flare(lake_directory = lake_directory,

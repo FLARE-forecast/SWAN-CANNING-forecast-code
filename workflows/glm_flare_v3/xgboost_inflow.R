@@ -41,4 +41,5 @@ inflow_forecast <- xg_combine_model_runs(site_id = site_identifier,
                                     inflow_endpoint = config$s3$inflow_drivers$endpoint,
                                     inflow_local_directory = file.path(lake_directory, "drivers/inflow"), 
                                     forecast_horizon = config$run_config$forecast_horizon, 
-                                    inflow_model = config$inflow$forecast_inflow_model)
+                                    inflow_model = config$inflow$forecast_inflow_model,
+                                    include_aed_vars = FALSE)

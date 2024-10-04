@@ -30,7 +30,7 @@ lake_profile_sites <- c('BAC','BACD300','BACD500','BACU300','CASMID','ELL','GRE'
                         'KENU300','KS7','KS9','MACD50','MASD50','NIC','NIC-IN',
                         'NICD200','PAC','PO2','RIV','SAL','SCB2')
 
-lake_profile_df <- collect_profile_targets(profile_data_download = profile_obs_df,
+lake_profile_df <- collect_profile_targets_aed_insitu(profile_data_download = profile_obs_df,
                                            sites = lake_profile_sites)
 
 data_combined <- bind_rows(lake_insitu_df, lake_profile_df) |>

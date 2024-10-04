@@ -7,7 +7,8 @@ xg_combine_model_runs <- function(site_id,
                              inflow_endpoint = NULL,
                              inflow_local_directory = NULL, 
                              forecast_horizon = NULL, 
-                             inflow_model = NULL){
+                             inflow_model = NULL, 
+                             include_aed_vars = FALSE){
   
   if((!is.null(forecast_start_datetime)) && (forecast_horizon > 0)){
     
@@ -172,7 +173,7 @@ xg_combine_model_runs <- function(site_id,
                                             drivers_df = salt_drivers,
                                             var_name = 'SALT')
     
-    
+    if(include_aed_vars == TRUE){
     ## ALL OTHER VARIABLES NEEDED FOR AED
     inflow_variables <- inflow_targets |>
       filter(!(variable %in% c('TEMP','SALT','FLOW'))) |>
@@ -206,7 +207,18 @@ xg_combine_model_runs <- function(site_id,
                                              var_name = i)
       
       var_prediction_build <- dplyr::bind_rows(var_prediction_build, var_predictions)
-    }
+      
+    } # end for loop
+      
+    inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions, var_prediction_build) |>
+      mutate(reference_datetime = as.Date(reference_datetime))
+    
+    } else {
+      
+      inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions) |>
+        mutate(reference_datetime = as.Date(reference_datetime))
+      
+    } # end if statement
     
     
     ## COMBINE ALL INFLOW PREDICTIONS

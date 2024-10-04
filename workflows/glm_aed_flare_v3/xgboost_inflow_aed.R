@@ -9,7 +9,7 @@ source('R/xg_run_inflow_model.R')
 source('R/xg_combine_model_runs.R')
 
 lake_directory <- here::here()
-config_set_name <- "glm_flare_v3"
+config_set_name <- "glm_aed_flare_v3"
 #forecast_site <- c("CANN")
 # configure_run_file <- "configure_run.yml"
 # config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
@@ -41,4 +41,5 @@ inflow_forecast <- xg_combine_model_runs(site_id = site_identifier,
                                     inflow_endpoint = config$s3$inflow_drivers$endpoint,
                                     inflow_local_directory = file.path(lake_directory, "drivers/inflow"), 
                                     forecast_horizon = config$run_config$forecast_horizon, 
-                                    inflow_model = config$inflow$forecast_inflow_model)
+                                    inflow_model = config$inflow$forecast_inflow_model, 
+                                    include_aed_vars = TRUE)

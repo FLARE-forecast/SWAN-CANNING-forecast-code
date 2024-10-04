@@ -58,7 +58,8 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     mutate(sd_check_under = mean_roll - (sd_roll*3)) |> 
     mutate(sd_check_over = mean_roll + (sd_roll*3)) |> 
     dplyr::filter(!(sd_roll > 1 & (observation < sd_check_under)), 
-           !(sd_roll > 1 & (observation < sd_check_over)))
+           !(sd_roll > 1 & (observation < sd_check_over))) |> 
+    dplyr::select(datetime, site_id, depth, observation, variable)
   
   print('roll_temp')
   print(names(roll_temp))

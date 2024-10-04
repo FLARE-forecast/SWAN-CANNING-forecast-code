@@ -3,36 +3,36 @@
 #library(cron) ## needed for converting time objects
 
 #source('R/fct_awss3Connect.R')
-# 
-# rawwiski <- awss3Connect(filename = 'arms/wiski.csv')
+
+#rawwiski <- awss3Connect(filename = 'arms/wiski.csv')
 # 
 # # test objects
 # wiski_data <- rawwiski
 # 
 # ## pull sites upstream of the Kent St weir
-# #sites <- c('KEN', 'BARC', 'KS7', 'NIC', 'ELL')
+#sites <- c('KEN', 'BARC', 'KS7', 'NIC', 'ELL')
 # sites <- c('YULEB', 'STHNR', 'CANNR')
 
-collect_profile_targets_aed <- function(profile_data_download, sites){
+collect_profile_targets_aed_inflow <- function(profile_data_download, sites){
   cannsites <- sites # ('KEN','KENU300')  #these are all the sites in Canning River, and 'KEN' is Kent st weir. Note 'Bacon Downstream'  is not included in this dataset as it belongs to a different program. 
   
-  # profile_data <- rawwiski %>%  
+  # profile_data <- rawwiski %>%
   #   dplyr::filter(`Collect Date` %in% as.Date(plotDataWeek,format="%Y-%m-%d") &
   #                   `Program Site Ref` %in% cannsites &
   #                   `Collection Method` %in% 'Insitu' &
   #                   `Data Category` %in% 'Instrument log')
   
-  profile_data_download <- profile_data_download[,1:123]
+  profile_data_subset <- profile_data_download[,1:123]
   
-  remove_cols <- grep('Qual|Sign|Security|Wind|Tide|Comments|Primary|Null', names(profile_data_download))
-  profile_data_download <- profile_data_download[,-remove_cols]
+  remove_cols <- grep('Qual|Sign|Security|Wind|Tide|Comments|Primary|Null', names(profile_data_subset))
+  profile_data_subset <- profile_data_subset[,-remove_cols]
   
   
   aed_vars <- c("datetime", 
-                # "FLOW", 
-                # "TEMP", # "Temperature (deg C)"
-                # "SALT", # "Salinity (ppt)" 
-                #           'OXY_oxy', #available as is
+                "FLOW",
+                "TEMP", # "Temperature (deg C)"
+                "SALT", # "Salinity (ppt)"
+                          'OXY_oxy', #available as is
                                'CAR_dic', #
                                'CAR_ch4',
                                'SIL_rsi', # "SiO2 (sol react) (ug/L)", "SiO2-Si (sol react) (ug/L)" (?)  
@@ -52,16 +52,18 @@ collect_profile_targets_aed <- function(profile_data_download, sites){
                                'PHY_green', # CHLA * 0.15
                                'PHY_diatom') # CHLA * 0.5
   
-  profile_data <- profile_data_download %>%  
+  profile_data <- profile_data_subset %>%  
     dplyr::filter(`Program Site Ref` %in% cannsites) |> #&
                     #`Collection Method` %in% c('Insitu',"Integrated over depth")) |>  #&
                     #`Data Category` %in% 'Instrument log') |>
-    dplyr::mutate(SALT = `Salinity (ppt)`, 
+    dplyr::mutate(CAR_dic = 0,
+                  CAR_ch4 = 0,
+                  SALT = `Salinity (ppt)`, 
                   TEMP = `Temperature (deg C)`, 
                   OXY_oxy = `O2-{DO conc} (mg/L)`,
                   SIL_rsi = `SiO2-Si (sol react) (ug/L)`, 
                   NIT_amm = `NH3-N/NH4-N (sol) (ug/L)`,
-                  NIT_nit = `NO3-N (sol) (ug/L)` + `NO2-N (sol) (ug/L)`,
+                  NIT_nit = 700, #`NO3-N (sol) (ug/L)` + `NO2-N (sol) (ug/L)`, ## data only found for 1995 (used average of available data)
                   PHS_frp = `PO4-P (sol react) {SRP FRP} (ug/L)`,
                   OGM_doc = `C (sol org) {DOC DOC as NPOC} (ug/L)` * 0.1,
                   OGM_docr = `C (sol org) {DOC DOC as NPOC} (ug/L)` * 0.9,
@@ -74,40 +76,42 @@ collect_profile_targets_aed <- function(profile_data_download, sites){
                   OGM_pop = (`PO4-P (sol react) {SRP FRP} (ug/L)` - (0.1*`PO4-P (sol react) {SRP FRP} (ug/L)`)) * 0.5,
                   PHY_cyano = `Chlorophyll a (in situ) (ug/L)` * 0.1,
                   PHY_green = `Chlorophyll a (in situ) (ug/L)` * 0.15,
-                  PHY_diatom = `Chlorophyll a (in situ) (ug/L)` * 0.5)
+                  PHY_diatom = `Chlorophyll a (in situ) (ug/L)` * 0.5) |> 
     select(site_ref = `Site Ref`, 
            program = `Program Site Ref`, 
            time = `Collect Time`, 
            date = `Collect Date`, 
-           depth = `Sample Depth (m)`, 
-           salt = `Salinity (ppt)`, 
-           temperature = `Temperature (deg C)`, 
-           oxygen = `O2-{DO conc} (mg/L)`) |> 
+           depth = `Sample Depth (m)`,
+           dplyr::any_of(aed_vars)) |> 
     mutate(time = format(strptime(time, "%I:%M:%S %p"), "%H:%M:%S")) |> # convert from AM/PM to 24-hour 
-    mutate(datetime = paste(date, time))
+    mutate(datetime = lubridate::force_tz(lubridate::as_datetime(paste(date, time), format = '%d/%m/%Y %H:%M:%S')), tzone = 'Australia/Perth') |> 
+    mutate(datetime = lubridate::with_tz(datetime, tzone = "UTC")) |> 
+    mutate(datetime = lubridate::round_date(datetime, unit = 'hour'))
   
   profile_data_grouped <- profile_data |> 
-    mutate(depth_rounded = plyr::round_any(depth, 0.25))  |> # bin depths by rounding -- matches depth configuration 
-    select(-depth) |> 
-    rename(depth = depth_rounded) |> 
-    dplyr::filter(!is.na(depth), 
-                  depth <= 6.0) |> 
-    pivot_longer(cols = c("salt", "temperature", "oxygen"), names_to = 'variable', values_to = 'data') |> 
-    summarise(observation = mean(data, na.rm = TRUE), .by = c("datetime","variable","depth")) |> 
-    mutate(datetime = lubridate::force_tz(lubridate::as_datetime(datetime, format = '%d/%m/%Y %H:%M:%S')), tzone = 'Australia/Perth') |>
-    mutate(datetime = lubridate::with_tz(datetime, tzone = "UTC")) |> 
-    mutate(datetime = lubridate::round_date(datetime, unit = 'hour')) |> 
-    mutate(site_id = 'CANN') |> 
-    select(datetime, site_id, depth, observation, variable) |> 
-    mutate(date = as.Date(datetime)) |> 
-    group_by(date, variable) |> 
-    mutate(min_datetime = min(datetime)) |> 
-    ungroup() |> 
-    group_by(date, variable) |> 
-    dplyr::filter(datetime == min_datetime) |> 
-    ungroup() |> 
-    dplyr::filter(!is.nan(observation)) |> 
-    select(datetime = date, site_id, depth, observation, variable)
+   # mutate(depth_rounded = plyr::round_any(depth, 0.25))  |> # bin depths by rounding -- matches depth configuration 
+    #select(-depth) |> 
+    #rename(depth = depth_rounded) |> 
+    #dplyr::filter(!is.na(depth), 
+    #              depth <= 6.0) |> 
+    select(-site_ref, -program, -time, - date, -tzone, -depth) |> 
+    pivot_longer(-c("datetime"), names_to = 'variable', values_to = 'data') |> 
+    mutate(date = as.Date(datetime),
+           datetime = lubridate::as_datetime(paste0(format(date, "%Y-%m-%d %H"), ":00:00"))) |> 
+    filter(!is.na(data)) |> 
+    #summarise(observation = mean(data, na.rm = TRUE), .by = c("datetime","variable","depth")) |> 
+    summarise(observation = mean(data, na.rm = TRUE), .by = c("datetime","variable")) |> 
+    mutate(site_id = 'CANN', 
+           depth = 0) |> ## AVERAGED VARIABLES OVER WATER COLUMN FOR INFLOW (ASSUMPTION BASED ON HOW SHALLOW CANN INFLOW IS (0-5m))
+    select(datetime, site_id, observation, variable)
+    # group_by(date, variable) |> 
+    # mutate(min_datetime = min(datetime)) |> 
+    # ungroup() |> 
+    # group_by(date, variable) |> 
+    # dplyr::filter(datetime == min_datetime) |> 
+    # ungroup() |> 
+    # dplyr::filter(!is.nan(observation)) |> 
+    # select(datetime = date, site_id, depth, observation, variable)
   
   return(profile_data_grouped)
 }
