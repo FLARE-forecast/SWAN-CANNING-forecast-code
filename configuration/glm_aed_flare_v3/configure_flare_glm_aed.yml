@@ -51,7 +51,7 @@ model_settings:
    par_config_file: parameter_calibration_config_aed.csv
    obs_config_file: observations_config_aed.csv
    states_config_file: states_config_aed.csv
-   depth_model_sd_config_file: depth_model_sd.csv
+   depth_model_sd_config_file: depth_model_sd_aed.csv
 default_init:
    lake_depth: 6.0  #not a modeled state
    temp: [10.20,10.20,10.20,10.20]
