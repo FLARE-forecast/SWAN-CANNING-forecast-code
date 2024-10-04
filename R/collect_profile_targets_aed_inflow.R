@@ -32,6 +32,7 @@ collect_profile_targets_aed_inflow <- function(profile_data_download, sites){
                 "FLOW",
                 "TEMP", # "Temperature (deg C)"
                 "SALT", # "Salinity (ppt)"
+                "CHLA", # `Chlorophyll a (in situ) (ug/L)`
                           'OXY_oxy', #available as is
                                'CAR_dic', #
                                'CAR_ch4',
@@ -58,9 +59,10 @@ collect_profile_targets_aed_inflow <- function(profile_data_download, sites){
                     #`Data Category` %in% 'Instrument log') |>
     dplyr::mutate(CAR_dic = 0,
                   CAR_ch4 = 0,
+                  CHLA = `Chlorophyll a (in situ) (ug/L)`,
                   SALT = `Salinity (ppt)`, 
                   TEMP = `Temperature (deg C)`, 
-                  OXY_oxy = `O2-{DO conc} (mg/L)`,
+                  OXY_oxy = `O2-{DO conc} (mg/L)`*1000, #convert to ug/L
                   SIL_rsi = `SiO2-Si (sol react) (ug/L)`, 
                   NIT_amm = `NH3-N/NH4-N (sol) (ug/L)`,
                   NIT_nit = 700, #`NO3-N (sol) (ug/L)` + `NO2-N (sol) (ug/L)`, ## data only found for 1995 (used average of available data)
@@ -74,9 +76,9 @@ collect_profile_targets_aed_inflow <- function(profile_data_download, sites){
                   OGM_dop = (`PO4-P (sol react) {SRP FRP} (ug/L)` - (0.1*`PO4-P (sol react) {SRP FRP} (ug/L)`)) * 0.4,
                   OGM_dopr = OGM_dop * 0.1, 
                   OGM_pop = (`PO4-P (sol react) {SRP FRP} (ug/L)` - (0.1*`PO4-P (sol react) {SRP FRP} (ug/L)`)) * 0.5,
-                  PHY_cyano = `Chlorophyll a (in situ) (ug/L)` * 0.1,
-                  PHY_green = `Chlorophyll a (in situ) (ug/L)` * 0.15,
-                  PHY_diatom = `Chlorophyll a (in situ) (ug/L)` * 0.5) |> 
+                  PHY_cyano = CHLA * 0.1,
+                  PHY_green = CHLA * 0.15,
+                  PHY_diatom = CHLA * 0.5) |> 
     select(site_ref = `Site Ref`, 
            program = `Program Site Ref`, 
            time = `Collect Time`, 

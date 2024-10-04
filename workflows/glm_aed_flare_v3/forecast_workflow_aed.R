@@ -4,9 +4,8 @@ library(tidymodels)
 library(xgboost)
 library(RcppRoll)
 
-#remotes::install_github('flare-forecast/FLAREr@single-parameter')
-#remotes::install_github('flare-forecast/FLAREr')
-#remotes::install_github("rqthomas/GLM3r")
+options(future.globals.maxSize= 891289600)
+
 Sys.setenv('GLM_PATH'='GLM3r')
 
 lake_directory <- here::here()
@@ -15,12 +14,13 @@ forecast_site <- "CANN"
 configure_run_file <- "configure_run.yml"
 config_set_name <- "glm_aed_flare_v3"
 
-fresh_run <- FALSE
 
 Sys.setenv("AWS_DEFAULT_REGION" = "renc",
            "AWS_S3_ENDPOINT" = "osn.xsede.org",
            "USE_HTTPS" = TRUE,
            "SC_S3_ENDPOINT" = "projects.pawsey.org.au")
+
+source('./R/generate_forecast_score_arrow.R')
 
 #' Source the R files in the repository
 #walk(list.files(file.path(lake_directory, "R"), full.names = TRUE), source)
@@ -29,13 +29,15 @@ config_obs <- yaml::read_yaml(file.path(lake_directory,'configuration',config_se
 configure_run_file <- "configure_run.yml"
 config <- FLAREr:::set_up_simulation(configure_run_file,lake_directory, config_set_name = config_set_name)
 
-if(fresh_run) unlink(file.path(lake_directory, "restart", "CANN", config$run_config$sim_name, configure_run_file))
+# fresh_run <- TRUE
+# if(fresh_run) unlink(file.path(lake_directory, "restart", "CANN", config$run_config$sim_name, configure_run_file))
 
 noaa_ready <- FLAREr::check_noaa_present(lake_directory,
                                          configure_run_file = configure_run_file,
                                          config_set_name = config_set_name)
 
 if(noaa_ready){
+  message("NOAA ready")
   # Read in the targets
   source('workflows/glm_aed_flare_v3/generate_targets_aed.R')
   
@@ -58,7 +60,7 @@ if(noaa_ready){
   use_s3_inflow <- config$inflow$use_forecasted_inflow
   
   
-  source('./R/generate_forecast_score_arrow.R')
+  #source('./R/generate_forecast_score_arrow.R')
 }
 
 
@@ -73,7 +75,7 @@ while(noaa_ready){
   source(file.path(lake_directory, "workflows", config_set_name, "xgboost_inflow_aed.R"))
   
   # Run FLARE
-  output <- FLAREr:::run_flare(lake_directory = lake_directory,
+  output <- FLAREr::run_flare(lake_directory = lake_directory,
                                configure_run_file = configure_run_file,
                                config_set_name = config_set_name)
   
@@ -81,7 +83,7 @@ while(noaa_ready){
   forecast_s3 <- arrow::s3_bucket(bucket = config$s3$forecasts_parquet$bucket, endpoint_override = config$s3$forecasts_parquet$endpoint, anonymous = TRUE)
   forecast_df <- arrow::open_dataset(forecast_s3) |>
     dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
-    dplyr::filter(model_id == 'glm_flare_v3',
+    dplyr::filter(model_id == 'glm_aed_flare_v3',
                   site_id == forecast_site,
                   reference_date == lubridate::as_datetime(config$run_config$forecast_start_datetime)) |>
     dplyr::collect()
@@ -94,7 +96,7 @@ while(noaa_ready){
     past_s3 <- arrow::s3_bucket(bucket = config$s3$forecasts_parquet$bucket, endpoint_override = config$s3$forecasts_parquet$endpoint, anonymous = TRUE)
     past_forecasts <- arrow::open_dataset(past_s3) |>
       dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
-      dplyr::filter(model_id == 'glm_flare_v3',
+      dplyr::filter(model_id == 'glm_aed_flare_v3',
                     site_id == forecast_site,
                     reference_date == past_days) |>
       dplyr::collect()
@@ -114,7 +116,7 @@ while(noaa_ready){
                                            use_s3 = TRUE,
                                            bucket = config$s3$scores$bucket,
                                            endpoint = config$s3$scores$endpoint,
-                                           local_directory = './SWAN-CANNING-forecast-code/scores/fcre',
+                                           local_directory = './SWAN-CANNING-forecast-code/scores/CANN',
                                            variable_types = c("state","parameter"))
   
   forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)

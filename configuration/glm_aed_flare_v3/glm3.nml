@@ -1,5 +1,5 @@
 &glm_setup
-   sim_name = 'FCR'
+   sim_name = 'CANN'
    max_layers = 500
    min_layer_vol = 0.025
    min_layer_thick = 0.2
