@@ -94,3 +94,4 @@ uncertainty:
 output_settings:
    diagnostics_names:  [extc]
    generate_plots: FALSE
+   evaluate_past: TRUE
