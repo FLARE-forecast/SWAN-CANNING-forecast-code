@@ -66,9 +66,6 @@ default_init:
 flows:
    include_inflow: TRUE
    include_outflow: TRUE
-   forecast_inflow_model: inflow-xgboost
-   #observed_inflow_filename: NA
-   #inflow_variables: NA
    historical_inflow_model: historic/model_id=inflow-xgboost/site_id={site_id}
    future_inflow_model: future/model_id=inflow-xgboost/reference_datetime={reference_date}/site_id={site_id}
    historical_outflow_model: historic/model_id=inflow-xgboost/site_id={site_id}
@@ -77,7 +74,6 @@ flows:
    local_outflow_directory: drivers/outflow
    use_flows_s3: no
    use_ler_vars: no
-   #use_forecasted_inflow: TRUE
 met:
    future_met_model: 'gefs-v12/stage2/reference_datetime={reference_date}/site_id={site_id}'
    historical_met_model: 'gefs-v12/stage3/site_id={site_id}'
@@ -94,7 +90,6 @@ uncertainty:
    weather: TRUE
    initial_condition: TRUE
    parameter: TRUE
-   met_downscale: TRUE
    inflow: TRUE
 output_settings:
    diagnostics_names:  [extc]
