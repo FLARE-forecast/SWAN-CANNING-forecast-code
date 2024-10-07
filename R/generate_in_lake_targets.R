@@ -5,6 +5,8 @@ library(tidyverse)
 # source('R/collect_insitu_targets.R')
 # source('R/collect_profile_targets.R')
 
+source('R/collect_profile_targets_aed_insitu.R')
+
 
 # COLLECT INSITU SENSOR DATA
 message('Collecting Sensor Data...')
