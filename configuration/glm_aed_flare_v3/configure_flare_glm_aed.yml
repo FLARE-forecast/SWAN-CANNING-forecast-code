@@ -30,7 +30,7 @@ location:
    longitude: 116  #Degrees East
 da_setup:
     da_method: enkf
-    par_fit_method: perturb_const
+    par_fit_method: perturb
     ensemble_size:  217
     localization_distance: .na #distance in meters were covariances in the model error are used
     no_negative_states: TRUE
@@ -39,8 +39,11 @@ da_setup:
     obs_filename: CANN-targets-insitu.csv
 model_settings:
    ncore: 4
-   model_name: glm
+   model_name: glm_aed
    base_GLM_nml: glm3.nml
+   base_AED_nml: aed2.nml
+   base_AED_phyto_pars_nml: aed_phyto_pars.csv
+   base_AED_zoop_pars_nml: aed2_zoop_pars.nml
    max_model_layers: 100
    modeled_depths: [0.0, 0.50, 1.0,
                     1.50, 2.0,
@@ -51,7 +54,7 @@ model_settings:
    par_config_file: parameter_calibration_config_aed.csv
    obs_config_file: observations_config_aed.csv
    states_config_file: states_config_aed.csv
-   depth_model_sd_config_file: depth_model_sd.csv
+   depth_model_sd_config_file: depth_model_sd_aed.csv
 default_init:
    lake_depth: 6.0  #not a modeled state
    temp: [10.20,10.20,10.20,10.20]
@@ -63,9 +66,6 @@ default_init:
 flows:
    include_inflow: TRUE
    include_outflow: TRUE
-   forecast_inflow_model: inflow-xgboost
-   #observed_inflow_filename: NA
-   #inflow_variables: NA
    historical_inflow_model: historic/model_id=inflow-xgboost/site_id={site_id}
    future_inflow_model: future/model_id=inflow-xgboost/reference_datetime={reference_date}/site_id={site_id}
    historical_outflow_model: historic/model_id=inflow-xgboost/site_id={site_id}
@@ -74,7 +74,6 @@ flows:
    local_outflow_directory: drivers/outflow
    use_flows_s3: no
    use_ler_vars: no
-   #use_forecasted_inflow: TRUE
 met:
    future_met_model: 'gefs-v12/stage2/reference_datetime={reference_date}/site_id={site_id}'
    historical_met_model: 'gefs-v12/stage3/site_id={site_id}'
@@ -91,8 +90,8 @@ uncertainty:
    weather: TRUE
    initial_condition: TRUE
    parameter: TRUE
-   met_downscale: TRUE
    inflow: TRUE
 output_settings:
    diagnostics_names:  [extc]
    generate_plots: FALSE
+   evaluate_past: TRUE

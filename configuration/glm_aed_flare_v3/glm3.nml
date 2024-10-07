@@ -23,7 +23,6 @@
    Kw = 0.5
 /
 &mixing
-&mixing
    surface_mixing = 1
    coef_mix_conv = 0.125 
    coef_wind_stir = 0.23 
