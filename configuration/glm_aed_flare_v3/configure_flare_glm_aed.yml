@@ -66,6 +66,7 @@ default_init:
 flows:
    include_inflow: TRUE
    include_outflow: TRUE
+   forecast_inflow_model: inflow-xgboost
    historical_inflow_model: historic/model_id=inflow-xgboost/site_id={site_id}
    future_inflow_model: future/model_id=inflow-xgboost/reference_datetime={reference_date}/site_id={site_id}
    historical_outflow_model: historic/model_id=inflow-xgboost/site_id={site_id}

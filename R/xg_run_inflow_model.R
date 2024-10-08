@@ -111,7 +111,7 @@ xg_run_inflow_model <- function(train_data, model_recipe, met_combined, targets_
   update_historical_df <- data_build |>
     left_join(targets_df, by = c('date')) |>
     #mutate(prediction = ifelse(!is.na(observation), observation, prediction)) |> ## COME BACK TO THIS -- DO WE WANT THIS???
-    mutate(model_id = config$flow$forecast_inflow_model) |>
+    mutate(model_id = config$flows$forecast_inflow_model) |>
     mutate(site_id = config$location$site_id) |>
     mutate(reference_datetime = config$run_config$forecast_start_datetime) |>
     mutate(family = 'ensemble') |>
