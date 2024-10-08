@@ -222,9 +222,9 @@ xg_combine_model_runs <- function(site_id,
     
     
     ## COMBINE ALL INFLOW PREDICTIONS
-    
-    inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions, var_prediction_build) |>
-      mutate(reference_datetime = as.Date(reference_datetime))
+    # 
+    # inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions, var_prediction_build) |>
+    #   mutate(reference_datetime = as.Date(reference_datetime))
     
     ## remove dups here for now ## -- come back to this
     inflow_combined <- inflow_combined |> distinct(,.keep_all = TRUE)
