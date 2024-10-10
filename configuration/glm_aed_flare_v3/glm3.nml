@@ -31,7 +31,7 @@
    coef_mix_KH = 0.4 
    coef_mix_hyp = 0.5 
    deep_mixing = 2 
-   diff = 0
+   !diff = 0
    coef_mix_shreq = 0
 /
 &morphometry

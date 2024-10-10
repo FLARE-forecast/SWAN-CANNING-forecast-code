@@ -15,6 +15,9 @@ xg_run_inflow_model <- function(train_data, model_recipe, met_combined, targets_
   # train_data <- forecast_drivers |>
   #   dplyr::filter(date < reference_datetime)
   
+  
+  
+  
   ## define folds in training data
   folds <- vfold_cv(train_data, v = 5) # orginally set to 10
   

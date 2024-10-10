@@ -14,7 +14,7 @@ xg_combine_model_runs <- function(site_id,
     
     #print('inside of run_inflow_model')
     
-    forecast_date <- lubridate::as_date(forecast_start_datetime) - lubridate::days(1)
+    forecast_date <- lubridate::as_date(forecast_start_datetime) #- lubridate::days(1)
     forecast_hour <- lubridate::hour(forecast_start_datetime)
     
     ## pull in observed met data

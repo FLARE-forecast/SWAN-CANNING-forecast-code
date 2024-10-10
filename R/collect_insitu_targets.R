@@ -5,14 +5,18 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   
   # remove duplicates 
   obs_dedup <- obs_download |>
-  distinct(Height, variable, datetime, .keep_all = TRUE)
+    distinct(Height, variable, datetime, .keep_all = TRUE) |> 
+    filter(variable != 'Dissolved Oxygen (saturation)')
+    
   
   #print('obs_dedup')
   print(names(obs_dedup))
   
-  obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(salt = `Salinity (ppt)`, temperature = 'Temperature')
+  obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(SALT = `Salinity (ppt)`, 
+                                                                                               TEMP = 'Temperature',
+                                                                                               OXY_oxy = 'Dissolved Oxygen')
   
-  obs_df <- obs_df_wide |> pivot_longer(cols = c('temperature','salt'),
+  obs_df <- obs_df_wide |> pivot_longer(cols = c('TEMP','SALT','OXY_oxy'),
                                         names_to = 'variable', 
                                         values_to = 'observation')
   
@@ -39,50 +43,51 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     ungroup() |> 
     distinct(Date, variable, .keep_all = TRUE) |> 
     mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "UTC")) |> 
-    mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6)
+    mutate(depth = 1.5,
+           observation = ifelse(variable == "OXY_oxy", observation*1000*(1/32), observation)) |> # assign depth to match model config depths (median depth value is 1.6))
     dplyr::select(datetime, site_id, depth, observation, variable)
   
-  print('cleaned_insitu_file')
-  print(names(cleaned_insitu_file))
-  
-  print('trying roll temp')
-  
-  roll_temp <- cleaned_insitu_file |> 
-    dplyr::filter(variable == 'temperature', 
-           observation != 0) |> 
-    arrange(datetime) |> 
-    mutate(mean_roll = RcppRoll::roll_mean(x = observation, n = 7, fill = NA, na.rm = TRUE)) |> 
-    mutate(sd_roll = RcppRoll::roll_sd(x = mean_roll, n = 7, fill = NA, na.rm = TRUE)) |> 
-    mutate(mean_roll = zoo::na.fill(mean_roll, "extend")) |> 
-    mutate(sd_roll = zoo::na.fill(sd_roll, "extend")) |>
-    mutate(sd_check_under = mean_roll - (sd_roll*3)) |> 
-    mutate(sd_check_over = mean_roll + (sd_roll*3)) |> 
-    dplyr::filter(!(sd_roll > 1 & (observation < sd_check_under)), 
-           !(sd_roll > 1 & (observation < sd_check_over))) |> 
-    dplyr::select(datetime, site_id, depth, observation, variable)
-  
-  print('roll_temp')
-  print(names(roll_temp))
-  
-  # roll_salt <- cleaned_insitu_file |> 
-  #   filter(variable == 'salt') |> 
+  # print('cleaned_insitu_file')
+  # print(names(cleaned_insitu_file))
+  # 
+  # print('trying roll temp')
+  # 
+  # roll_temp <- cleaned_insitu_file |> 
+  #   dplyr::filter(variable == 'temperature', 
+  #          observation != 0) |> 
   #   arrange(datetime) |> 
   #   mutate(mean_roll = RcppRoll::roll_mean(x = observation, n = 7, fill = NA, na.rm = TRUE)) |> 
   #   mutate(sd_roll = RcppRoll::roll_sd(x = mean_roll, n = 7, fill = NA, na.rm = TRUE)) |> 
   #   mutate(mean_roll = zoo::na.fill(mean_roll, "extend")) |> 
   #   mutate(sd_roll = zoo::na.fill(sd_roll, "extend")) |>
-  #   mutate(obs_test = observation < (mean_roll - (sd_roll*2))) |> 
-  #   mutate(obs_num = mean_roll - (sd_roll*3)) |> 
-  #   filter(!((observation < (mean_roll - (sd_roll*3)))), 
-  #          !((observation < (mean_roll + (sd_roll*3)))))
+  #   mutate(sd_check_under = mean_roll - (sd_roll*3)) |> 
+  #   mutate(sd_check_over = mean_roll + (sd_roll*3)) |> 
+  #   dplyr::filter(!(sd_roll > 1 & (observation < sd_check_under)), 
+  #          !(sd_roll > 1 & (observation < sd_check_over))) |> 
+  #   dplyr::select(datetime, site_id, depth, observation, variable)
+  # 
+  # print('roll_temp')
+  # print(names(roll_temp))
+  # 
+  # # roll_salt <- cleaned_insitu_file |> 
+  # #   filter(variable == 'salt') |> 
+  # #   arrange(datetime) |> 
+  # #   mutate(mean_roll = RcppRoll::roll_mean(x = observation, n = 7, fill = NA, na.rm = TRUE)) |> 
+  # #   mutate(sd_roll = RcppRoll::roll_sd(x = mean_roll, n = 7, fill = NA, na.rm = TRUE)) |> 
+  # #   mutate(mean_roll = zoo::na.fill(mean_roll, "extend")) |> 
+  # #   mutate(sd_roll = zoo::na.fill(sd_roll, "extend")) |>
+  # #   mutate(obs_test = observation < (mean_roll - (sd_roll*2))) |> 
+  # #   mutate(obs_num = mean_roll - (sd_roll*3)) |> 
+  # #   filter(!((observation < (mean_roll - (sd_roll*3)))), 
+  # #          !((observation < (mean_roll + (sd_roll*3)))))
+  # 
+  # 
+  # roll_salt <- cleaned_insitu_file |>
+  #   dplyr::filter(variable == 'salt') |>
+  #   arrange(datetime) |> 
+  #   dplyr::filter(!(observation == 0))
+  # 
+  # updated_data <- bind_rows(roll_temp, roll_salt)
   
-  
-  roll_salt <- cleaned_insitu_file |>
-    dplyr::filter(variable == 'salt') |>
-    arrange(datetime) |> 
-    dplyr::filter(!(observation == 0))
-  
-  updated_data <- bind_rows(roll_temp, roll_salt)
-  
-  return(updated_data)
+  return(cleaned_insitu_file)
 }
