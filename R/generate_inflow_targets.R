@@ -37,7 +37,8 @@ mock_inflow_obs_df <- awss3Connect_sensorcode(sensorCodes = upstream_site_code, 
 
 mock_inflow_insitu_df <- collect_insitu_targets(obs_download = mock_inflow_obs_df,
                                          site_location = 'CANN',
-                                         assign_depth = 1.5)
+                                         assign_depth = 1.5,
+                                         aed_vars = FALSE)
 mock_inflow_insitu_df <- mock_inflow_insitu_df |>
   select(datetime, site_id, variable, observation)
 
