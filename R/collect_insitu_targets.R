@@ -6,15 +6,15 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   # remove duplicates 
   obs_dedup <- obs_download |>
     distinct(Height, variable, datetime, .keep_all = TRUE) |> 
-    filter(variable != 'Dissolved Oxygen (saturation)')
+    filter(variable != 'Dissolved Oxygen (saturation)') |>
+    mutate(variable = ifelse(variable == 'Dissolved Oxygen', 'Oxygen', variable))
     
-  
   #print('obs_dedup')
   print(names(obs_dedup))
   
-  obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(SALT = `Salinity (ppt)`, 
+  obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> dplyr::rename(SALT = `Salinity (ppt)`, 
                                                                                                TEMP = Temperature,
-                                                                                               OXY_oxy = `Dissolved Oxygen`)
+                                                                                               OXY_oxy = Oxygen)
   
   obs_df <- obs_df_wide |> pivot_longer(cols = c('TEMP','SALT','OXY_oxy'),
                                         names_to = 'variable', 
