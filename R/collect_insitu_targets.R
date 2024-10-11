@@ -1,8 +1,8 @@
 
-collect_insitu_targets <- function(obs_download, site_location, assign_depth){
+collect_insitu_targets <- function(obs_download, site_location, assign_depth, aed_vars){
   
-  #print(names(obs_download))
   
+  if (aed_vars == TRUE){
   # remove duplicates 
   obs_dedup <- obs_download |>
     distinct(Height, variable, datetime, .keep_all = TRUE) |> 
@@ -47,6 +47,47 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
            observation = ifelse(variable == "OXY_oxy", observation*1000*(1/32), observation)) |> # assign depth to match model config depths (median depth value is 1.6))
     dplyr::select(datetime, site_id, depth, observation, variable)
   
+  } else {
+    # remove duplicates 
+    obs_dedup <- obs_download |>
+      distinct(Height, variable, datetime, .keep_all = TRUE)
+    
+    #print('obs_dedup')
+    print(names(obs_dedup))
+    
+    obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> dplyr::rename(SALT = `Salinity (ppt)`, 
+                                                                                                        TEMP = Temperature)
+    
+    obs_df <- obs_df_wide |> pivot_longer(cols = c('TEMP','SALT'),
+                                          names_to = 'variable', 
+                                          values_to = 'observation')
+    
+    ## assign columns
+    obs_df$site_id <- site_location
+    
+    #print('obs_df')
+    #print(names(obs_df))
+    
+    group_insitu <- obs_df |> 
+      mutate(Date = as.Date(datetime)) |> 
+      mutate(hour = lubridate::hour(datetime))
+    #print(group_insitu)
+    
+    group_insitu <- group_insitu |> 
+      dplyr::filter(hour == 0)
+    
+    #print('group_insitu')
+    #print(names(group_insitu))
+    
+    cleaned_insitu_file <- group_insitu |> # only want midnight observations for the daily value
+      group_by(Date, variable) |> 
+      mutate(observation = mean(observation, na.rm = TRUE)) |> 
+      ungroup() |> 
+      distinct(Date, variable, .keep_all = TRUE) |> 
+      mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "UTC")) |> 
+      mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6))
+      dplyr::select(datetime, site_id, depth, observation, variable)
+  }
   # print('cleaned_insitu_file')
   # print(names(cleaned_insitu_file))
   # 

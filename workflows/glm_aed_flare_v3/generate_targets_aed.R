@@ -44,7 +44,8 @@ insitu_obs_df <- awss3Connect_sensorcode(sensorCodes = all_site_codes, code_df =
 
 lake_insitu_df <- collect_insitu_targets(obs_download = insitu_obs_df,
                                          site_location = 'CANN',
-                                         assign_depth = 1.5)
+                                         assign_depth = 1.5,
+                                         aed_vars = TRUE)
 
 
 # COLLECT PROFILE DATA
