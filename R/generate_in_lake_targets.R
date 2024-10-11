@@ -10,10 +10,10 @@ source('R/collect_profile_targets_aed_insitu.R')
 
 # COLLECT INSITU SENSOR DATA
 message('Collecting Sensor Data...')
-all_site_codes <- c('sensor_repository_81684', 'sensor_repository_81685', # Bacon Down (temp, salt)
-                    'sensor_repository_81698', 'sensor_repository_81699', # Bacon Up
-                    'sensor_repository_81768', 'sensor_repository_81769', # Nicholson Down
-                    'sensor_repository_81782', 'sensor_repository_81783') # Nicholson Up
+all_site_codes <- c('sensor_repository_81684', 'sensor_repository_81685', 'sensor_repository_81682', # Bacon Down (temp, salt, DO)
+                    'sensor_repository_81698', 'sensor_repository_81699', 'sensor_repository_81696', # Bacon Up
+                    'sensor_repository_81768', 'sensor_repository_81769', 'sensor_repository_81767', # Nicholson Down
+                    'sensor_repository_81782', 'sensor_repository_81783', 'sensor_repository_81780') # Nicholson Up
 
 insitu_obs_df <- awss3Connect_sensorcode(sensorCodes = all_site_codes, code_df = sensorcode_df) |>
   select(-QC, -Date)
