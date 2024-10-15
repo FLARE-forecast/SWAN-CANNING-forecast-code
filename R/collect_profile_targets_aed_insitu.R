@@ -30,7 +30,7 @@ collect_profile_targets_aed_insitu <- function(profile_data_download, sites){
   
   aed_vars <- c("datetime", 
                 "TEMP", # "Temperature (deg C)"
-                "SALT", # "Salinity (ppt)"
+                "salt", # "Salinity (ppt)"
                 "CHLA", # `Chlorophyll a (in situ) (ug/L)`
                 'OXY_oxy', #available as is
                 'CAR_dic', #
@@ -59,7 +59,7 @@ collect_profile_targets_aed_insitu <- function(profile_data_download, sites){
     dplyr::mutate(CAR_dic = 0,
                   CAR_ch4 = 0,
                   CHLA = `Chlorophyll a (in situ) (ug/L)`,
-                  SALT = `Salinity (ppt)`, 
+                  salt = `Salinity (ppt)`, 
                   TEMP = `Temperature (deg C)`, 
                   OXY_oxy = `O2-{DO conc} (mg/L)`*1000*(1/32), #convert to ug/L
                   SIL_rsi = `SiO2-Si (sol react) (ug/L)` * (1/60.08), 

@@ -16,7 +16,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth, ae
                                                                                                TEMP = Temperature,
                                                                                                OXY_oxy = Oxygen)
   
-  obs_df <- obs_df_wide |> pivot_longer(cols = c('TEMP','SALT','OXY_oxy'),
+  obs_df <- obs_df_wide |> pivot_longer(cols = c('TEMP','salt','OXY_oxy'),
                                         names_to = 'variable', 
                                         values_to = 'observation')
   
@@ -58,7 +58,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth, ae
     obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> dplyr::rename(SALT = `Salinity (ppt)`, 
                                                                                                         TEMP = Temperature)
     
-    obs_df <- obs_df_wide |> pivot_longer(cols = c('TEMP','SALT'),
+    obs_df <- obs_df_wide |> pivot_longer(cols = c('TEMP','salt'),
                                           names_to = 'variable', 
                                           values_to = 'observation')
     
