@@ -55,7 +55,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth, ae
     #print('obs_dedup')
     print(names(obs_dedup))
     
-    obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> dplyr::rename(SALT = `Salinity (ppt)`, 
+    obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> dplyr::rename(salt = `Salinity (ppt)`, 
                                                                                                         TEMP = Temperature)
     
     obs_df <- obs_df_wide |> pivot_longer(cols = c('TEMP','salt'),
