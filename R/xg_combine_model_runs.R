@@ -283,15 +283,16 @@ xg_combine_model_runs <- function(site_id,
     # inflow_s3 <- arrow::SubTreeFileSystem$create(file.path(inflow_local_directory, inflow_forecast_path))
     # arrow::write_dataset(flow_combined, path = inflow_s3)
     #
-    inflow_local_files <- list.files(file.path(inflow_local_directory), full.names = TRUE, recursive = TRUE)
+    #inflow_local_files <- list.files(file.path(inflow_local_directory), full.names = TRUE, recursive = TRUE)
+    flow_objects <- list(future_inflow, historic_inflow, future_outflow, historic_outflow)
     
     print("Inflow files processed...")
     
     
   }else{
     message("nothing to forecast")
-    inflow_local_files <- NULL
+    flow_objects <- NULL
   }# end if statement
   
-  return(inflow_local_files)
+  return(flow_objects)
 }
