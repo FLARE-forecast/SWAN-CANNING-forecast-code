@@ -126,15 +126,15 @@
 !-------------------------------------------------------------------------------
 &inflow
    num_inflows = 0
-   names_of_strms = 'Riv1'
-   subm_flag = .true.
-   strm_hf_angle = 55
-   strmbd_slope = 0.05
-   strmbd_drag = 0.016
-   subm_elev = 4.0
-   inflow_factor = 1.0
-   coef_inf_entrain = 0
-   inflow_fl = 'canning_inf_S616027_WQ.csv'
+   names_of_strms = 'Riv1','Riv2'
+   subm_flag = .true.,.true.
+   strm_hf_angle = 55,55
+   strmbd_slope = 0.05,0.05
+   strmbd_drag = 0.016,0.016
+   subm_elev = 4.0,1.0
+   inflow_factor = 1.0,0.4
+   coef_inf_entrain = 0,0
+   inflow_fl = 'canning_inf_S616027_WQ.csv','canning_inf_oxy.csv'
    inflow_varnum = 3
    inflow_vars = 'FLOW','TEMP','SALT'
 /
