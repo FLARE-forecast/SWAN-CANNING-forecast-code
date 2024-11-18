@@ -52,13 +52,24 @@ collect_profile_targets_aed_insitu <- function(profile_data_download, sites){
                 'PHY_green', # CHLA * 0.15
                 'PHY_diatom') # CHLA * 0.5
   
+  
+  aed_vars <- c("datetime", 
+                "TEMP", # "Temperature (deg C)"
+                "salt", # "Salinity (ppt)"
+                "CHLA", # `Chlorophyll a (in situ) (ug/L)`
+                'OXY_oxy', #available as is
+                'SIL_rsi', # "SiO2 (sol react) (ug/L)", "SiO2-Si (sol react) (ug/L)" (?)  
+                'NIT_amm', # "NH3-N/NH4-N (sol) (ug/L)"
+                'NIT_nit', #"NO3-N (sol) (ug/L)" + NO2-N (sol) (ug/L)
+                'PHS_frp', #"PO4-P (sol react) {SRP FRP} (ug/L)" 
+                'OGM_doc_total',
+                'OGM_don_total') 
+  
   profile_data <- profile_data_subset %>%  
     dplyr::filter(`Program Site Ref` %in% cannsites) |> #&
     #`Collection Method` %in% c('Insitu',"Integrated over depth")) |>  #&
     #`Data Category` %in% 'Instrument log') |>
-    dplyr::mutate(CAR_dic = 0,
-                  CAR_ch4 = 0,
-                  CHLA = `Chlorophyll a (in situ) (ug/L)`,
+    dplyr::mutate(CHLA = `Chlorophyll a (in situ) (ug/L)`,
                   salt = `Salinity (ppt)`, 
                   TEMP = `Temperature (deg C)`, 
                   OXY_oxy = `O2-{DO conc} (mg/L)`*1000*(1/32), #convert to ug/L
@@ -66,18 +77,8 @@ collect_profile_targets_aed_insitu <- function(profile_data_download, sites){
                   NIT_amm = `NH3-N/NH4-N (sol) (ug/L)` * (1/18.04),
                   NIT_nit = `NO3-N (sol) (ug/L)` + `NO2-N (sol) (ug/L)` * (1/62.00),
                   PHS_frp = `PO4-P (sol react) {SRP FRP} (ug/L)` * (1/94.9714),
-                  OGM_doc = `C (sol org) {DOC DOC as NPOC} (ug/L)` * 0.1 * (1/12.01),
-                  OGM_docr = `C (sol org) {DOC DOC as NPOC} (ug/L)` * 0.9 * (1/12.01),
-                  OGM_poc = `C (sol org) {DOC DOC as NPOC} (ug/L)` * 0.1 *(1/12.01),
-                  OGM_don =  `N (sum sol org) {DON} (ug/L)` * (5/6),
-                  OGM_donr = `N (sum sol org) {DON} (ug/L)` * 0.1 * (5/6),
-                  OGM_pon = (`N (tot) {TN pTN} (ug/L)` - NIT_amm - NIT_nit - OGM_don) * (1/6),
-                  OGM_dop = ((`PO4-P (sol react) {SRP FRP} (ug/L)` * (1/94.9714)) - PHS_frp) * 0.3 * 0.1,
-                  OGM_dopr = ((`PO4-P (sol react) {SRP FRP} (ug/L)` * (1/94.9714)) - PHS_frp) * 0.3 * 0.9, 
-                  OGM_pop = (`PO4-P (sol react) {SRP FRP} (ug/L)` * ((1/94.9714))) - (OGM_dop+OGM_dopr+PHS_frp),
-                  PHY_cyano = CHLA * 0.1,
-                  PHY_green = CHLA * 0.15,
-                  PHY_diatom = CHLA * 0.5) |> 
+                  OGM_doc_total = `C (sol org) {DOC DOC as NPOC} (ug/L)` * (1/12.01),
+                  OGM_don_total =  `N (sum sol org) {DON} (ug/L)` * (5/6)) |> 
     select(site_ref = `Site Ref`, 
            program = `Program Site Ref`, 
            time = `Collect Time`, 
@@ -85,7 +86,7 @@ collect_profile_targets_aed_insitu <- function(profile_data_download, sites){
            depth = `Sample Depth (m)`,
            dplyr::any_of(aed_vars)) |> 
     mutate(time = format(strptime(time, "%I:%M:%S %p"), "%H:%M:%S")) |> # convert from AM/PM to 24-hour 
-    mutate(datetime = lubridate::force_tz(lubridate::as_datetime(paste(date, time), format = '%d/%m/%Y %H:%M:%S')), tzone = 'Australia/Perth') |> 
+    mutate(datetime = lubridate::force_tz(lubridate::as_datetime(paste(date, time), format = '%d/%m/%Y %H:%M:%S'), tzone = 'Australia/Perth')) |> 
     mutate(datetime = lubridate::with_tz(datetime, tzone = "UTC")) |> 
     mutate(datetime = lubridate::round_date(datetime, unit = 'hour'))
   
@@ -95,7 +96,7 @@ collect_profile_targets_aed_insitu <- function(profile_data_download, sites){
     #rename(depth = depth_rounded) |> 
     #dplyr::filter(!is.na(depth), 
     #              depth <= 6.0) |> 
-    select(-site_ref, -program, -time, - date, -tzone) |> 
+    select(-site_ref, -program, -time, - date) |> 
     pivot_longer(-c("datetime", "depth"), names_to = 'variable', values_to = 'data') |> 
     mutate(date = as.Date(datetime),
            datetime = lubridate::as_datetime(paste0(format(date, "%Y-%m-%d %H"), ":00:00"))) |> 
