@@ -35,13 +35,14 @@ message('Collecting Sensor Data...')
 all_site_codes <- c('sensor_repository_81684', 'sensor_repository_81685', 'sensor_repository_81682', # Bacon Down (temp, salt, DO)
                     'sensor_repository_81698', 'sensor_repository_81699', 'sensor_repository_81696', # Bacon Up
                     'sensor_repository_81768', 'sensor_repository_81769', 'sensor_repository_81767', # Nicholson Down
-                    'sensor_repository_81782', 'sensor_repository_81783', 'sensor_repository_81780') # Nicholson Up
+                    'sensor_repository_81782', 'sensor_repository_81783', 'sensor_repository_81780', # Nicholson Up
+                    'sensor_repository_81681', 'sensor_repository_81695', 'sensor_repository_81765', 'sensor_repository_81779') # Depths
 
 insitu_obs_df <- awss3Connect_sensorcode(sensorCodes = all_site_codes, code_df = sensorcode_df) |>
   select(-QC, -Date)
 
 #print(nrow(insitu_obs_df))
-
+ ### FIX THIS TO ASSIGN DEPTH VARIABLE A NA DEPTH
 lake_insitu_df <- collect_insitu_targets(obs_download = insitu_obs_df,
                                          site_location = 'CANN',
                                          assign_depth = 1.5,

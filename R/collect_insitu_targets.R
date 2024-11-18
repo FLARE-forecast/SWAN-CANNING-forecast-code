@@ -16,7 +16,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth, ae
                                                                                                TEMP = Temperature,
                                                                                                OXY_oxy = Oxygen)
   
-  obs_df <- obs_df_wide |> pivot_longer(cols = c('TEMP','salt','OXY_oxy'),
+  obs_df <- obs_df_wide |> pivot_longer(cols = c('TEMP','salt','OXY_oxy', 'Depth'),
                                         names_to = 'variable', 
                                         values_to = 'observation')
   
@@ -43,7 +43,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth, ae
     ungroup() |> 
     distinct(Date, variable, .keep_all = TRUE) |> 
     mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "UTC")) |> 
-    mutate(depth = 1.5,
+    mutate(depth = ifelse(variable == 'Depth', NA, 1.5),
            observation = ifelse(variable == "OXY_oxy", observation*1000*(1/32), observation)) |> # assign depth to match model config depths (median depth value is 1.6))
     dplyr::select(datetime, site_id, depth, observation, variable)
   
@@ -85,7 +85,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth, ae
       ungroup() |> 
       distinct(Date, variable, .keep_all = TRUE) |> 
       mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "UTC")) |> 
-      mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6))
+      mutate(depth = ifelse(variable == 'Depth', NA, 1.5)) |> # assign depth to match model config depths (median depth value is 1.6))
       dplyr::select(datetime, site_id, depth, observation, variable)
   }
   # print('cleaned_insitu_file')
