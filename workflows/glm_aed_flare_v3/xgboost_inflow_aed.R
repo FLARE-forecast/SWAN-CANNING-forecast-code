@@ -36,14 +36,14 @@ message('done initializing....starting forecasts')
 
 ## Run Forecast
 xg_flow_forecast <- xg_combine_model_runs(site_id = site_identifier, 
-                                    forecast_start_datetime = reference_datetime, 
-                                    use_s3_inflow = config$run_config$use_s3, 
-                                    inflow_bucket = config$s3$inflow_drivers$bucket,
-                                    inflow_endpoint = config$s3$inflow_drivers$endpoint,
-                                    inflow_local_directory = file.path(lake_directory, "drivers/inflow"), 
-                                    forecast_horizon = config$run_config$forecast_horizon, 
-                                    inflow_model = config$inflow$forecast_inflow_model, 
-                                    include_aed_vars = TRUE)
+                                          forecast_start_datetime = reference_datetime, 
+                                          use_s3_inflow = config$run_config$use_s3, 
+                                          inflow_bucket = config$s3$inflow_drivers$bucket,
+                                          inflow_endpoint = config$s3$inflow_drivers$endpoint,
+                                          inflow_local_directory = file.path(lake_directory, "drivers/inflow"), 
+                                          forecast_horizon = config$run_config$forecast_horizon, 
+                                          inflow_model = config$inflow$forecast_inflow_model, 
+                                          include_aed_vars = TRUE)
 
 xg_inflow_future <- xg_flow_forecast[[1]] 
 xg_inflow_historic <- xg_flow_forecast[[2]]

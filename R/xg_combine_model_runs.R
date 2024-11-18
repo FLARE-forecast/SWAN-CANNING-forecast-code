@@ -23,7 +23,7 @@ xg_combine_model_runs <- function(site_id,
       filter(variable == 'air_temperature') |>
       mutate(date = as.Date(datetime),
              temp = observation) |> 
-             #temp = observation - 273.15) |>
+      #temp = observation - 273.15) |>
       summarise(daily_temperature = median(temp, na.rm = TRUE), .by = c("date"))
     
     ## pull in future NOAA data 
@@ -51,7 +51,7 @@ xg_combine_model_runs <- function(site_id,
     
     ## pull in past NOAA data
     met_s3_past <- arrow::s3_bucket(paste0("bio230121-bucket01/flare/drivers/met/gefs-v12/stage3/site_id=",site_id),
-                                    endpoint_override = endpoint,
+                                    endpoint_override = 'renc.osn.xsede.org',
                                     anonymous = TRUE)
     
     years_prior <- forecast_start_datetime - lubridate::days(1825) # 5 years
@@ -59,9 +59,9 @@ xg_combine_model_runs <- function(site_id,
     df_past <- arrow::open_dataset(met_s3_past) |> 
       #select(datetime, parameter, variable, prediction) |> 
       dplyr::filter(variable %in% c("precipitation_flux","air_temperature"),
-             ((datetime <= min_datetime  & variable == "precipitation_flux") | 
-                datetime < min_datetime  & variable == "air_temperature"),
-             datetime > years_prior) |> 
+                    ((datetime <= min_datetime  & variable == "precipitation_flux") | 
+                       datetime < min_datetime  & variable == "air_temperature"),
+                    datetime > years_prior) |> 
       collect() |> 
       rename(ensemble = parameter) |> 
       mutate(variable = ifelse(variable == "precipitation_flux", "precipitation", variable),

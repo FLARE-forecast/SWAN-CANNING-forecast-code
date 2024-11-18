@@ -113,10 +113,10 @@ while(noaa_ready){
   
   scoring <- generate_forecast_score_arrow(targets_df = targets_df,
                                            forecast_df = combined_forecasts, ## only works if dataframe returned from output
-                                           use_s3 = TRUE,
+                                           use_s3 = config$run_config$use_s3,
                                            bucket = config$s3$scores$bucket,
                                            endpoint = config$s3$scores$endpoint,
-                                           local_directory = './SWAN-CANNING-forecast-code/scores/CANN',
+                                           local_directory = './scores/CANN',
                                            variable_types = c("state","parameter"))
   
   forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)
