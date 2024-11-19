@@ -75,7 +75,7 @@ collect_profile_targets_aed_insitu <- function(profile_data_download, sites){
                   OXY_oxy = `O2-{DO conc} (mg/L)`*1000*(1/32), #convert to ug/L
                   SIL_rsi = `SiO2-Si (sol react) (ug/L)` * (1/60.08), 
                   NIT_amm = `NH3-N/NH4-N (sol) (ug/L)` * (1/18.04),
-                  NIT_nit = `NO3-N (sol) (ug/L)` + `NO2-N (sol) (ug/L)` * (1/62.00),
+                  NIT_nit = `N (sum sol ox) {NOx-N TON} (ug/L)` * (1/62.00),
                   PHS_frp = `PO4-P (sol react) {SRP FRP} (ug/L)` * (1/94.9714),
                   OGM_doc_total = `C (sol org) {DOC DOC as NPOC} (ug/L)` * (1/12.01),
                   OGM_don_total =  `N (sum sol org) {DON} (ug/L)` * (5/6)) |> 
