@@ -65,16 +65,16 @@ collect_profile_targets_aed_inflow <- function(profile_data_download, sites){
                   OXY_oxy = `O2-{DO conc} (mg/L)`*1000*(1/32), #convert to ug/L
                   SIL_rsi = `SiO2-Si (sol react) (ug/L)` * (1/60.08), 
                   NIT_amm = `NH3-N/NH4-N (sol) (ug/L)` * (1/18.04),
-                  NIT_nit = 700 * (1/62.00), #`NO3-N (sol) (ug/L)` + `NO2-N (sol) (ug/L)`, ## data only found for 1995 (used average of available data)
-                  PHS_frp = `PO4-P (sol react) {SRP FRP} (ug/L)`,                  PHS_frp = `PO4-P (sol react) {SRP FRP} (ug/L)` * (1/94.9714),
+                  NIT_nit = `N (sum sol ox) {NOx-N TON} (ug/L)` * (1/62.00),
+                  PHS_frp = `PO4-P (sol react) {SRP FRP} (ug/L)` * (1/94.9714),
                   OGM_doc = `C (sol org) {DOC DOC as NPOC} (ug/L)` * 0.1 * (1/12.01),
                   OGM_docr = `C (sol org) {DOC DOC as NPOC} (ug/L)` * 0.9 * (1/12.01),
                   OGM_poc = `C (sol org) {DOC DOC as NPOC} (ug/L)` * 0.1 *(1/12.01),
-                  OGM_don =  `N (sum sol org) {DON} (ug/L)` * (5/6),
-                  OGM_donr = `N (sum sol org) {DON} (ug/L)` * 0.1 * (5/6),
-                  OGM_pon = (`N (tot) {TN pTN} (ug/L)` - NIT_amm - NIT_nit - OGM_don) * (1/6),
-                  OGM_dop = ((`PO4-P (sol react) {SRP FRP} (ug/L)` * (1/94.9714)) - PHS_frp) * 0.3 * 0.1,
-                  OGM_dopr = ((`PO4-P (sol react) {SRP FRP} (ug/L)` * (1/94.9714)) - PHS_frp) * 0.3 * 0.9, 
+                  OGM_don =  `N (sum sol org) {DON} (ug/L)` * 0.9  * (1/62.00),
+                  OGM_donr = `N (sum sol org) {DON} (ug/L)` * 0.1 * (1/62.00),
+                  OGM_pon = (`N (tot) {TN pTN} (ug/L)`* (1/62.00)) - NIT_amm - NIT_nit - OGM_don - OGM_donr ,
+                  OGM_dop = ((`PO4-P (sol react) {SRP FRP} (ug/L)` * (1/94.9714)) - PHS_frp) * 0.3 * 0.1, #THIS ISN"T CORRECT
+                  OGM_dopr = ((`PO4-P (sol react) {SRP FRP} (ug/L)` * (1/94.9714)) - PHS_frp) * 0.3 * 0.9, #THIS ISN"T CORRECT 
                   OGM_pop = (`PO4-P (sol react) {SRP FRP} (ug/L)` * ((1/94.9714))) - (OGM_dop+OGM_dopr+PHS_frp),
                   PHY_cyano = CHLA * 0.1,
                   PHY_green = CHLA * 0.15,

@@ -2,7 +2,7 @@
 collect_insitu_targets <- function(obs_download, site_location, assign_depth, aed_vars){
   
   
-  if (aed_vars == TRUE){
+  if (aed_vars){
   # remove duplicates 
   obs_dedup <- obs_download |>
     distinct(Height, variable, datetime, .keep_all = TRUE) |> 
