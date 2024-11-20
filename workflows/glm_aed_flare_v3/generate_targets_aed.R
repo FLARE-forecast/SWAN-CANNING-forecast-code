@@ -114,21 +114,21 @@ inflow_profile_data <- collect_profile_targets_aed_inflow(sites = inflow_sites,
 
 ## add FLOW data
 sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
-#cann_flow_codes <- 'sensor_repository_00804'
+cann_flow_codes <- 'sensor_repository_00804'
 south_flow_codes <- 'sensor_repository_00752'
 
-#cann_inflow_download <- awss3Connect_sensorcode(sensorCodes = cann_flow_codes, code_df = sensorcode_df)
+cann_inflow_download <- awss3Connect_sensorcode(sensorCodes = cann_flow_codes, code_df = sensorcode_df)
 south_inflow_download <- awss3Connect_sensorcode(sensorCodes = south_flow_codes, code_df = sensorcode_df)
 
-#cann_inflow_download$flow_source <- 'cann_river'
+cann_inflow_download$flow_source <- 'cann_river'
 south_inflow_download$flow_source <- 'south_river'
 
-#inflow_combined <- dplyr::bind_rows(cann_inflow_download, south_inflow_download)
-#inflow_combined$Date <- as.Date(inflow_combined$datetime, tz = "Australia/Perth")
+inflow_combined <- dplyr::bind_rows(cann_inflow_download, south_inflow_download)
+inflow_combined$Date <- as.Date(inflow_combined$datetime, tz = "Australia/Perth")
 
-south_inflow_download$Date <- as.Date(south_inflow_download$datetime, tz = "Australia/Perth")
+#south_inflow_download$Date <- as.Date(south_inflow_download$datetime, tz = "Australia/Perth")
 
-daily_inflow_rate_df <- south_inflow_download |>
+daily_inflow_rate_df <- inflow_combined |>
   group_by(Date, flow_source) |>
   mutate(average_rate = mean(Data, na.rm = TRUE)) |>
   ungroup() |>
@@ -137,34 +137,34 @@ daily_inflow_rate_df <- south_inflow_download |>
 daily_inflow_total <- daily_inflow_rate_df |>
   mutate(daily_total = ifelse(average_rate > 1, average_rate*0.1, average_rate)) # adjust large flow rates
 
-# daily_inflow_combined <- daily_inflow_total |>
-#   group_by(Date) |>
-#   mutate(combined_rate = ifelse((length(unique(flow_source)) > 1), sum(daily_total), daily_total)) |> # sum both flows if multiple present for day
-#   ungroup() |>
-#   drop_na(combined_rate)
+daily_inflow_combined <- daily_inflow_total |>
+  group_by(Date) |>
+  mutate(combined_rate = ifelse((length(unique(flow_source)) > 1), sum(daily_total), daily_total)) |> # sum both flows if multiple present for day
+  ungroup() |>
+  drop_na(combined_rate)
 
-# inflow_insitu_flow_df <- daily_inflow_combined |>
-#   pivot_wider(id_cols = c('Date'), names_from = 'flow_source', values_from = 'daily_total') |>
-#   group_by(Date) |>
-#   mutate(observation = sum(cann_river + south_river)) |>
-#   ungroup() |>
-#   arrange(Date) |>
-#   mutate(variable = 'FLOW',
-#          site_id = 'CANN',
-#          datetime = lubridate::as_datetime(paste0(format(Date, "%Y-%m-%d %H"), ":00:00"))) |>
-#   select(datetime, site_id, variable, observation)
-
-inflow_insitu_flow_df <- daily_inflow_total |>
+inflow_insitu_flow_df <- daily_inflow_combined |>
   pivot_wider(id_cols = c('Date'), names_from = 'flow_source', values_from = 'daily_total') |>
-  # group_by(Date) |>
-  # mutate(observation = sum(cann_river + south_river)) |>
-  # ungroup() |>
+  group_by(Date) |>
+  mutate(observation = sum(cann_river + south_river)) |>
+  ungroup() |>
   arrange(Date) |>
   mutate(variable = 'FLOW',
          site_id = 'CANN',
-         observation = south_river,
          datetime = lubridate::as_datetime(paste0(format(Date, "%Y-%m-%d %H"), ":00:00"))) |>
   select(datetime, site_id, variable, observation)
+
+# inflow_insitu_flow_df <- daily_inflow_total |>
+#   pivot_wider(id_cols = c('Date'), names_from = 'flow_source', values_from = 'daily_total') |>
+#   # group_by(Date) |>
+#   # mutate(observation = sum(cann_river + south_river)) |>
+#   # ungroup() |>
+#   arrange(Date) |>
+#   mutate(variable = 'FLOW',
+#          site_id = 'CANN',
+#          observation = south_river,
+#          datetime = lubridate::as_datetime(paste0(format(Date, "%Y-%m-%d %H"), ":00:00"))) |>
+#   select(datetime, site_id, variable, observation)
 
 combined_data <- bind_rows(inflow_profile_data, inflow_insitu_flow_df)  #|> ## ADD TEMP/SALT INSITU DATA HERE ONCE FOUND
   # summarise(observation = mean(observation, na.rm = TRUE), .by = c("datetime","variable")) |>
