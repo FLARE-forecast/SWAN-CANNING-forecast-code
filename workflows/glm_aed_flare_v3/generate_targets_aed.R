@@ -92,7 +92,7 @@ source('R/collect_profile_targets_aed_inflow.R')
 ## COLLECT PROFILE DATA FROM INFLOW
 #profile_obs_df <- awss3Connect(filename = 'arms/wiski.csv') ## READ IN ABOVE IN INSITU
 
-inflow_sites <- c('YULEB', 'STHNR', 'CANNR', 'ELL', 'PAC', 'MACD50', 'ELLISB', 'BICKB') # taken from the dashboard as locations upstream of the study site
+inflow_sites <- c('STHNR', 'CANNR') # taken from the dashboard as locations upstream of the study site
 
 inflow_profile_data <- collect_profile_targets_aed_inflow(sites = inflow_sites,
                                                profile_data_download = profile_obs_df)
