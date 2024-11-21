@@ -3,7 +3,8 @@
 ## COLLECT PROFILE DATA FROM INFLOW
 profile_obs_df <- awss3Connect(filename = 'arms/wiski.csv')
 
-inflow_sites <- c('YULEB', 'STHNR', 'CANNR', 'ELL', 'NIC', 'PAC', 'MACD50', 'ELLISB', 'BICKB') # taken from the dashboard as locations upstream of the study site
+#inflow_sites <- c('YULEB', 'STHNR', 'CANNR', 'ELL', 'NIC', 'PAC', 'MACD50', 'ELLISB', 'BICKB') # taken from the dashboard as locations upstream of the study site
+inflow_sites <- c('STHNR', 'CANNR') # only want southern river and cann river sites
 
 inflow_profile_data <- collect_profile_targets(sites = inflow_sites,
                                                profile_data_download = profile_obs_df)
