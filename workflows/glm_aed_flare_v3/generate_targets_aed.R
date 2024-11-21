@@ -53,10 +53,38 @@ lake_insitu_df <- collect_insitu_targets(obs_download = insitu_obs_df,
 message('Collecting Profile Targets...')
 source('R/collect_profile_targets_aed_insitu.R')
 
-profile_obs_df <- awss3Connect(filename = 'arms/wiski.csv')
-lake_profile_sites <- c('BAC','BACD300','BACD500','BACU300','CASMID','ELL','GRE','KEN',
-                        'KENU300','KS7','KS9','MACD50','MASD50','NIC','NIC-IN',
-                        'NICD200','PAC','PO2','RIV','SAL','SCB2')
+profile_obs_df <- awss3Connect(filename = 's3://scevo-data/arms/wiski.csv')
+
+#csv_file <- 's3://scevo-data/arms/wiski.csv'
+#s3 <- arrow::s3_bucket(bucket = 'scevo-data/arms', endpoint_override = Sys.getenv('SC_S3_ENDPOINT'), access_key = Sys.getenv('SC_AWS_KEY'), secret_key = Sys.getenv('SC_AWS_SECRET'))
+#duckdb_s3_config(s3_endpoint = Sys.getenv('SC_S3_ENDPOINT'), 
+#                 s3_access_key_id = Sys.getenv('SC_AWS_KEY'), 
+#                 s3_secret_access_key = Sys.getenv('SC_AWS_SECRET'))
+
+#gbif <- open_dataset(filename = csv_file, format = "csv")
+
+
+#fetchedData <- aws.s3::s3read_using(FUN = utils::read.csv,
+#                                    check.names = FALSE,
+#                                    #encoding = "UTF-8",
+#                                    # show_col_types = FALSE,
+#                                    # lazy = FALSE,
+#                                    # progress = FALSE,
+#                                    object = filename,
+#                                    bucket = bucket,
+#                                    filename = basename(filename),
+#                                    opts = list(
+#                                      base_url = Sys.getenv('SC_S3_ENDPOINT'),
+#                                      region = "",
+#                                      key = Sys.getenv('SC_AWS_KEY'),
+#                                      secret = Sys.getenv('SC_AWS_SECRET')))
+#lake_profile_sites <- c('BAC','BACD300','BACD500','BACU300','ELL','GRE','KEN',
+#                        'KENU300','KS7','KS9','MACD50','MASD50','NIC','NIC-IN',
+#                        'NICD200','PAC','PO2')
+
+lake_profile_sites <- c('KEN', 'BACD300', 'BAC', 'PO2', 'KS7', 'NIC', 'KS9', 'PAC', 'NELL')
+
+#lake_profile_sites <- c('BAC') #BACD300', 'BAC', 'PO2', 'KS7', 'NIC', 'KS9', 'PAC', 'NELL')
 
 lake_profile_df <- collect_profile_targets_aed_insitu(profile_data_download = profile_obs_df,
                                                       sites = lake_profile_sites)
@@ -92,9 +120,9 @@ source('R/collect_profile_targets_aed_inflow.R')
 ## COLLECT PROFILE DATA FROM INFLOW
 #profile_obs_df <- awss3Connect(filename = 'arms/wiski.csv') ## READ IN ABOVE IN INSITU
 
+
 #inflow_sites <- c('YULEB', 'STHNR', 'CANNR', 'ELL', 'PAC', 'MACD50', 'ELLISB', 'BICKB') # taken from the dashboard as locations upstream of the study site
 inflow_sites <- c('STHNR', 'CANNR') # only want southern river and cann river sites
-
 
 inflow_profile_data <- collect_profile_targets_aed_inflow(sites = inflow_sites,
                                                profile_data_download = profile_obs_df)

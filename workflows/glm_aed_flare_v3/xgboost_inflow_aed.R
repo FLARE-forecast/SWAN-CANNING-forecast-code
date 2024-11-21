@@ -50,7 +50,7 @@ xg_inflow_historic <- xg_flow_forecast[[2]]
 
 oxygenation_df <- oxygenation_inflow(inflow_forecast_future = xg_inflow_future, 
                                      inflow_forecast_historic = xg_inflow_historic,
-                                     use_oxygenation = FALSE)
+                                     use_oxygenation = use_oxygenation)
 
 flow_combined_future <- bind_rows(xg_inflow_future,oxygenation_df[[1]])
 arrow::write_dataset(flow_combined_future,

@@ -49,50 +49,8 @@
 !
 !-------------------------------------------------------------------------------
 &aed_models
-  models = 'aed_sedflux', 'aed_tracer','aed_noncohesive','aed_oxygen','aed_carbon','aed_silica','aed_nitrogen','aed_phosphorus','aed_organic_matter', 'aed_phytoplankton','aed_totals'
+  models = 'aed_tracer','aed_noncohesive','aed_oxygen','aed_silica','aed_nitrogen','aed_phosphorus','aed_organic_matter', 'aed_phytoplankton'
 
-/
-!###############################################################################
-! aed_sedflux
-!-------------------------------------------------------------------------------
-&aed_sedflux
-   sedflux_model = 'Constant2D'    ! Refer to ../Geo/Material Zones v4 Seagrass.png
-/
-&aed_sed_const2d
-   n_zones  = 3 !1s->   2      3      4      5      6      7      8      9    10c->   11     12     13    14b->   15     16     17     18     19
-   Fsed_oxy = -40.0, -80.0, -50.0, -50.0, -60.0, -90.0, -80.0, -50.0, -42.0, -50.0, -60.0, -80.0, -65.0, -60.0, -40.0, -45.0, -25.0, -25.0, -10.0
-   Fsed_rsi =   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   2.0,   2.0,   2.0,   1.0,   3.0
-   Fsed_frp =   0.03,  0.03,  0.03,  0.03,  0.1,   0.1,  0.15,  0.15,  0.15,  0.2,   0.2,   0.2,   0.2,   0.2,   0.1,   0.04,   0.03,  0.05,   0.1
-   Fsed_amm =   3.0,   3.0,   3.0,   3.0,   3.0,   3.5,   3.0,   2.0,   2.0,   3.0,   3.0,   2.0,   1.0,   1.0,   1.0,   0.6,   0.5,   0.2,   0.5
-   Fsed_nit =   0.5,   0.5,   0.7,   0.8,   0.5,   0.1,   0.1,   0.0,   0.0,   0.1,  -1.0,   0.5,  -1.0,  -0.5,  -0.2,  -0.2,  -0.5,  -1.0,  -2.5
-   Fsed_doc =   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   3.0,   0.0,   3.0
-   Fsed_don =   2.0,   2.0,   2.0,   2.0,   2.0,   2.0,   1.0,   1.0,   0.5,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   0.5,   0.5,   0.0,   1.0
-   Fsed_dop =   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   0.5,   0.5,   0.2,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.2,   0.2,   0.0,   0.5
-   Fsed_pon = -1e10,-1e10,-1e10
-   Fsed_pop = -1e10,-1e10,-1e10
-   Fsed_poc = -1e10,-1e10,-1e10
-/
-!###############################################################################
-! MAC: aed_macrophyte
-!-------------------------------------------------------------------------------
-!
-! The MAC module can be used to include benthic plants (not macroalgae) in
-! a simulation. Plants can be configured to be present in specific sediment
-! zones, and may be assumed to be static or dynamic. Growth parameters are read
-! in from the dbase file, which includes values for a range of typical
-! freshwater, estuarine and marine species.
-!
-! For details on the variable & parameter options visit:
-!      http://aed.see.uwa.edu.au/research/models/AED/aed_macrophyte.html
-!-------------------------------------------------------------------------------
-&aed_macrophyte
-   num_mphy         = 1
-   the_mphy         = 2
-   n_zones          = 1
-   active_zones     = 19             ! Refer to ../Geo/Zones.PNG
-   simStaticBiomass = .true.
-   simMacFeedback   = .true.
-   dbase            = 'aed/aed_macrophyte_pars.nml'
 /
 !###############################################################################
 ! TRC: aed_tracer
@@ -116,24 +74,24 @@
 !-------------------------------------------------------------------------------
 &aed_noncohesive
    !-- Select SS groups and their light attenuation
-    num_ss       = 2
+    num_ss       = 1
     !ss_initial   = 0,0
-    Ke_ss        = 0.06,0.063
+    Ke_ss        = 0.06,
    !-- Configure particle settling
     settling     = 1
-    w_ss         = -0.03,-0.001
-    d_ss         = 2e-6,1e-5
-    rho_ss       = 1.5e3,1.8e3
+    w_ss         = -0.03
+    d_ss         = 2e-6
+    rho_ss       = 1.5e3
    !-- Configure sediment resuspension
-    resuspension = 1
+    resuspension = 0
     epsilon      = 0.0070
-    tau_0        = 0.03, 0.03
+    tau_0        = 0.03
     tau_r        = 1.0
     Ktau_0       = 0.001
     macrophyte_link_var = ''
    !-- Configure sediment mass
     simSedimentMass= .true.
-    fs           = 0.4,0.4
+    fs           = 0.4
     sed_porosity = 0.6
 /
 !###############################################################################
@@ -147,10 +105,10 @@
     oxy_min=0.0
     oxy_max=500.0
     oxy_initial=225.0
-    !Fsed_oxy=-50.0
+    Fsed_oxy=-50.0
     Ksed_oxy=100.0
     theta_sed_oxy=1.08
-    Fsed_oxy_variable='SDF_Fsed_oxy'   ! Link to SDF 19 zones
+    Fsed_oxy_variable=''   ! Link to SDF 19 zones
 /
 !###############################################################################
 ! CAR: aed_carbon - AED carbon model
@@ -165,7 +123,7 @@
     Fsed_dic = 3.0
     Ksed_dic = 20.0
     theta_sed_dic = 1.08
-   !Fsed_dic_variable = 'Fsed_dic'
+    Fsed_dic_variable = 'Fsed_dic'
     pH_initial = 7.5
     atm_co2 = 370e-6  !atm
     co2_model = 1
@@ -198,7 +156,7 @@
    Ksed_rsi = 50.0
    theta_sed_rsi = 1.08
    silica_reactant_variable = 'OXY_oxy'
-   Fsed_rsi_variable = 'SDF_Fsed_rsi'
+   Fsed_rsi_variable = ''
 /
 !###############################################################################
 ! NIT: aed_nitrogen - AED nitrogen model
@@ -248,9 +206,9 @@
    Ksed_n2o = 100.0
    theta_sed_amm = 1.08
    theta_sed_nit = 1.08
-   Fsed_amm_variable = 'SDF_Fsed_amm'
-   Fsed_nit_variable = 'SDF_Fsed_nit'
-  !Fsed_n2o_variable = 'SDF_Fsed_n2o'
+   Fsed_amm_variable = ''
+   Fsed_nit_variable = ''
+  !Fsed_n2o_variable = ''
   !-- Atmospheric deposition
     simDryDeposition = .false.
     atm_din_dd       = 0.05
@@ -270,7 +228,7 @@
    Ksed_frp = 50.0
    theta_sed_frp = 1.10
    phosphorus_reactant_variable ='OXY_oxy'
-   Fsed_frp_variable ='SDF_Fsed_frp'
+   Fsed_frp_variable =''
    simPO4Adsorption = .true.
    ads_use_external_tss = .false.
    po4sorption_target_variable ='NCS_ss1'
@@ -363,7 +321,7 @@
      rho_cpom     = 1.4e3
 
     !-- Sediment interaction parameters (basic model)
-     resuspension = 1
+     resuspension = 0
      resus_link   = 'NCS_resus'
      sedimentOMfrac = 0.0010
      Xsc = 0.5
@@ -374,12 +332,12 @@
      Fsed_dop = 0.0
      Ksed_dom = 4.5
      theta_sed_dom = 1.08
-     Fsed_doc_variable = 'SDF_Fsed_doc'
-     Fsed_don_variable = 'SDF_Fsed_don'
-     Fsed_dop_variable = 'SDF_Fsed_dop'
+     Fsed_doc_variable = ''
+     Fsed_don_variable = ''
+     Fsed_dop_variable = ''
 
      !-- Other options
-      extra_diag = .false. !.true.
+     diag_level = 10
 /
 !###############################################################################
 ! PHY: aed_phytoplankton - AED phytoplankton model
@@ -390,16 +348,16 @@
 !-------------------------------------------------------------------------------
 &aed_phytoplankton
    !-- Configure phytoplankton groups to simulate & their settling
-     num_phytos   =   5
-     the_phytos   =   1,2,3,4,5
-     settling     =   1,1,1,1,4
+     num_phytos   =   3
+     the_phytos   =   1,2,3
+     settling     =   1,1,1
    !-- Benthic phytoplankton group (microphytobenthos)
-     do_mpb       =   1
+     do_mpb       =   0
      R_mpbg       =   0.5
      R_mpbr       =   0.05
      I_Kmpb       = 100.00
      mpb_max      =1000.00
-	 resuspension =   0.45, 0.45, 0.45, 0.45, 0.45,0.45, 0.45,0.45
+	   resuspension =   0.45, 0.45, 0.45, 0.45, 0.45,0.45, 0.45,0.45
      resus_link   =  'NCS_resus'
      n_zones      =   3
      active_zones =   3,4,5,6,7,8,9,10,11,12,13,14,15,16,16,18,19
@@ -420,73 +378,8 @@
      c_uptake_target_variable    =''
    !-- General options
      dbase = 'aed_phyto_pars.csv'
-    !dbase = '../External/AED2/aed2_phyto_pars_008.nml'
-     extra_diag = .false.
+     diag_level = 10
     !zerolimitfudgefactor = ??
      min_rho =  900.0
      max_rho = 1200.0
-/
-
-!###############################################################################
-! TOT: aed_totals
-!
-!  TN_vars      = list of variable contributing to total nitrogen
-!  TN_varscale  = scaling of TN variables contribution
-!  TP_vars      = list of variable contributing to total phosphorus
-!  TP_varscale  = scaling of TP variables contribution
-!  TOC_vars     = list of variable contributing to total organic carbon
-!  TOC_varscale = scaling of TOC variables contribution
-!  TSS_vars     = list of variable contributing to total suspended solids
-!  TSS_varscale = scaling of TSS variables contribution
-!
-!-------------------------------------------------------------------------------
-&aed_totals
-   outputLight  = .true.
-   TN_vars      =  'NIT_nit','NIT_amm','OGM_don','OGM_pon','OGM_donr','OGM_cpom','PHY_green','PHY_diatom','PHY_cyano'!'PHY_bga','PHY_dino','PHY_crypt'
-   TN_varscale  =   1.0,      1.0,      1.0,       1.0,     1.0,	0.005     ,0.15     ,0.15     ,0.15
-   !TKN_vars     =  'NIT_amm','OGM_don','OGM_pon','OGM_donr','PHY_grn'
-   !TKN_varscale =   1.0,      1.0,       1.0,     1.0,       0.15
-   TP_vars =  'PHS_frp',
-              'PHS_frp_ads',
-              'OGM_dop',
-              'OGM_dopr',
-              'OGM_pop',
-              'OGM_cpom',
-              'PHY_green',
-              'PHY_cyano',
-              !'PHY_dino',
-              'PHY_diatom'
-              !'PHY_crypt'
-   TP_varscale = 1.0, 1.0, 1.0, 1.0, 1.0, 0.0001, 0.01, 0.01, 0.01, 0.01, 0.01
-   TOC_vars = 'OGM_doc',
-              'OGM_docr',
-              'OGM_poc',
-              'OGM_cpom',
-              'PHY_green',
-              'PHY_cyano',
-              !'PHY_dino',
-              'PHY_diatom'
-              !'PHY_crypt'
-   TOC_varscale = 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
-   TSS_vars = 'NCS_ss1',
-              'NCS_ss2',
-              'OGM_cpom',
-              'OGM_poc',
-              'PHY_green',
-              'PHY_cyano',
-              !'PHY_dino',
-              'PHY_diatom'
-              !'PHY_crypt'
-   TSS_varscale = 1.0, 1.0, 0.024, 0.024, 0.02, 0.02, 0.02, 0.02, 0.02
-   Turb_vars ='NCS_ss1',
-              'NCS_ss2',
-              'OGM_cpom',
-              'OGM_poc',
-              'PHY_green',
-              'PHY_cyano',
-              !'PHY_dino',
-              'PHY_diatom'
-              !'PHY_crypt'
-   Turb_varscale = 0.33,0.30,0.003,0.003,0.003,0.003,0.003,0.003,0.003
-  ! Table 4 in science plan, with OGM and PHY vars converted from mmolC to gC) ;
 /

@@ -34,7 +34,7 @@ config <- FLAREr:::set_up_simulation(configure_run_file,lake_directory, config_s
 
 source('workflows/glm_aed_flare_v3/generate_targets_aed.R')
   
-  # Move targets to s3 bucket
+# Move targets to s3 bucket
 message("Successfully generated targets")
   
 FLAREr:::put_targets(site_id =  config$location$site_id,
@@ -63,6 +63,7 @@ while(noaa_ready){
   
   message("Generating inflow forecast")
   #source(file.path(lake_directory, "workflows", config_set_name, "02_run_inflow_forecast.R"))
+  use_oxygenation <- FALSE
   source(file.path(lake_directory, "workflows", config_set_name, "xgboost_inflow_aed.R"))
   
   # Run FLARE
