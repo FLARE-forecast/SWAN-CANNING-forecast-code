@@ -31,11 +31,11 @@ location:
 da_setup:
     da_method: enkf
     par_fit_method: perturb
-    ensemble_size:  217
+    ensemble_size:  10
     localization_distance: .na #distance in meters were covariances in the model error are used
     no_negative_states: TRUE
     assimilate_first_step: FALSE
-    use_obs_constraint: TRUE
+    use_obs_constraint: FALSE
     obs_filename: CANN-targets-insitu.csv
 model_settings:
    ncore: 4
@@ -94,4 +94,4 @@ uncertainty:
    inflow: TRUE
 output_settings:
    diagnostics_names:  [extc]
-   generate_plots: FALSE
+   generate_plots: TRUE
