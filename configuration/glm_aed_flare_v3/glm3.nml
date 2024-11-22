@@ -92,7 +92,7 @@
    lw_factor = 1.0
    meteo_fl    = 'met_hourly_AlexSY.csv'
   !meteo_fl    = 'met_Alex_NetLW.csv'
-   wind_factor = 1.00
+   wind_factor = 1.5
    ce = 0.0013
    ch = 0.0013
    cd = 0.0013
@@ -104,7 +104,7 @@
    strm_hf_angle = 55,55
    strmbd_slope = 0.05,0.05
    strmbd_drag = 0.016,0.016
-   subm_elev = 4.0,1.0
+   subm_elev = 4.0,3.0
    inflow_factor = 1.0,0.4
    coef_inf_entrain = 0,0
    inflow_fl = 'canning_inf_S616027_WQ.csv','sample_oxygenation.csv'
