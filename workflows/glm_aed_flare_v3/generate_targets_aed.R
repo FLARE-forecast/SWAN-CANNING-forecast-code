@@ -120,7 +120,9 @@ source('R/collect_profile_targets_aed_inflow.R')
 ## COLLECT PROFILE DATA FROM INFLOW
 #profile_obs_df <- awss3Connect(filename = 'arms/wiski.csv') ## READ IN ABOVE IN INSITU
 
-inflow_sites <- c('STHNR', 'CANNR') # taken from the dashboard as locations upstream of the study site
+
+#inflow_sites <- c('YULEB', 'STHNR', 'CANNR', 'ELL', 'PAC', 'MACD50', 'ELLISB', 'BICKB') # taken from the dashboard as locations upstream of the study site
+inflow_sites <- c('STHNR', 'CANNR') # only want southern river and cann river sites
 
 inflow_profile_data <- collect_profile_targets_aed_inflow(sites = inflow_sites,
                                                profile_data_download = profile_obs_df)
@@ -144,14 +146,15 @@ cann_flow_codes <- 'sensor_repository_00804'
 south_flow_codes <- 'sensor_repository_00752'
 
 cann_inflow_download <- awss3Connect_sensorcode(sensorCodes = cann_flow_codes, code_df = sensorcode_df)
-south_inflow_download <- awss3Connect_sensorcode(sensorCodes = cann_flow_codes, code_df = sensorcode_df)
+south_inflow_download <- awss3Connect_sensorcode(sensorCodes = south_flow_codes, code_df = sensorcode_df)
 
 cann_inflow_download$flow_source <- 'cann_river'
 south_inflow_download$flow_source <- 'south_river'
 
 inflow_combined <- dplyr::bind_rows(cann_inflow_download, south_inflow_download)
-
 inflow_combined$Date <- as.Date(inflow_combined$datetime, tz = "Australia/Perth")
+
+#south_inflow_download$Date <- as.Date(south_inflow_download$datetime, tz = "Australia/Perth")
 
 daily_inflow_rate_df <- inflow_combined |>
   group_by(Date, flow_source) |>
@@ -159,11 +162,8 @@ daily_inflow_rate_df <- inflow_combined |>
   ungroup() |>
   distinct(Date, flow_source, .keep_all = TRUE)
 
-# daily_inflow_total <- daily_inflow_rate_df |>
-#   mutate(daily_total = average_rate*86400) # second rate (m3/s) to day rate (86400 seconds per day) --> (m3/day)
-
 daily_inflow_total <- daily_inflow_rate_df |>
-  mutate(daily_total = ifelse(average_rate > 1, average_rate*0.1, average_rate)) # second rate (m3/s) to day rate (86400 seconds per day) --> (m3/day)
+  mutate(daily_total = ifelse(average_rate > 1, average_rate*0.1, average_rate)) # adjust large flow rates
 
 daily_inflow_combined <- daily_inflow_total |>
   group_by(Date) |>
@@ -181,6 +181,18 @@ inflow_insitu_flow_df <- daily_inflow_combined |>
          site_id = 'CANN',
          datetime = lubridate::as_datetime(paste0(format(Date, "%Y-%m-%d %H"), ":00:00"))) |>
   select(datetime, site_id, variable, observation)
+
+# inflow_insitu_flow_df <- daily_inflow_total |>
+#   pivot_wider(id_cols = c('Date'), names_from = 'flow_source', values_from = 'daily_total') |>
+#   # group_by(Date) |>
+#   # mutate(observation = sum(cann_river + south_river)) |>
+#   # ungroup() |>
+#   arrange(Date) |>
+#   mutate(variable = 'FLOW',
+#          site_id = 'CANN',
+#          observation = south_river,
+#          datetime = lubridate::as_datetime(paste0(format(Date, "%Y-%m-%d %H"), ":00:00"))) |>
+#   select(datetime, site_id, variable, observation)
 
 combined_data <- bind_rows(inflow_profile_data, inflow_insitu_flow_df)  #|> ## ADD TEMP/SALT INSITU DATA HERE ONCE FOUND
   # summarise(observation = mean(observation, na.rm = TRUE), .by = c("datetime","variable")) |>
