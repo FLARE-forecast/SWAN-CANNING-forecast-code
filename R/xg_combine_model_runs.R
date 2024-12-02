@@ -74,6 +74,11 @@ xg_combine_model_runs <- function(site_id,
     df_combined <- bind_rows(df_future, df_past) |> 
       arrange(variable, datetime, ensemble)
     
+    if(!config$uncertainty$weather){
+      df_combined <- df_combined |>
+        dplyr::filter(ensemble == 1)
+    }
+    
     forecast_precip <- df_combined |> 
       dplyr::filter(variable == 'precipitation') |> 
       summarise(precip_hourly = median(prediction, na.rm = TRUE), .by = c("datetime")) |> # get the median hourly precip across all EMs
