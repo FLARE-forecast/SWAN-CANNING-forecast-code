@@ -87,7 +87,7 @@ met:
    forecast_lag_days: 1
 uncertainty:
    observation: TRUE
-   process: TRUE
+   process: FALSE
    weather: TRUE
    initial_condition: TRUE
    parameter: TRUE

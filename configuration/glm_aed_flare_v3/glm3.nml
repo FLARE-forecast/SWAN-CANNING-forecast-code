@@ -1,6 +1,6 @@
 &glm_setup
    sim_name = 'CANN'
-   max_layers = 500
+   max_layers = 200
    min_layer_vol = 0.025
    min_layer_thick = 0.2
    max_layer_thick = 0.5
@@ -24,11 +24,11 @@
 /
 &mixing
    surface_mixing = 1
-   coef_mix_conv = 0.125 
-   coef_wind_stir = 0.23 
-   coef_mix_shear = 0.25 
+   coef_mix_conv = 0.2 
+   coef_wind_stir = 0.23
+   coef_mix_shear = 0.3 
    coef_mix_turb = 0.51 
-   coef_mix_KH = 0.4 
+   coef_mix_KH = 0.5 
    coef_mix_hyp = 0.5 
    deep_mixing = 2 
    !diff = 0
@@ -92,7 +92,7 @@
    lw_factor = 1.0
    meteo_fl    = 'met_hourly_AlexSY.csv'
   !meteo_fl    = 'met_Alex_NetLW.csv'
-   wind_factor = 1.00
+   wind_factor = 1.0
    ce = 0.0013
    ch = 0.0013
    cd = 0.0013
@@ -104,7 +104,7 @@
    strm_hf_angle = 55,55
    strmbd_slope = 0.05,0.05
    strmbd_drag = 0.016,0.016
-   subm_elev = 4.0,1.0
+   subm_elev = 5.0,3.0
    inflow_factor = 1.0,0.4
    coef_inf_entrain = 0,0
    inflow_fl = 'canning_inf_S616027_WQ.csv','sample_oxygenation.csv'

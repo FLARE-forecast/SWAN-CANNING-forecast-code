@@ -57,6 +57,7 @@ collect_profile_targets_aed_insitu <- function(profile_data_download, sites){
                 "TEMP", # "Temperature (deg C)"
                 "salt", # "Salinity (ppt)"
                 "CHLA", # `Chlorophyll a (in situ) (ug/L)`
+                "NCS_ss1",
                 'OXY_oxy', #available as is
                 'SIL_rsi', # "SiO2 (sol react) (ug/L)", "SiO2-Si (sol react) (ug/L)" (?)  
                 'NIT_amm', # "NH3-N/NH4-N (sol) (ug/L)"
@@ -72,6 +73,7 @@ collect_profile_targets_aed_insitu <- function(profile_data_download, sites){
     dplyr::mutate(CHLA = `Chlorophyll a (in situ) (ug/L)`,
                   salt = `Salinity (ppt)`, 
                   TEMP = `Temperature (deg C)`, 
+                  NCS_ss1 = `Suspended Solids (Total) {TSS} (mg/L)`,
                   OXY_oxy = `O2-{DO conc} (mg/L)`*1000*(1/32), #convert to ug/L
                   #SIL_rsi = `SiO2-Si (sol react) (ug/L)` * (1/60.08), 
                   NIT_amm = `NH3-N/NH4-N (sol) (ug/L)` * (1/14),
