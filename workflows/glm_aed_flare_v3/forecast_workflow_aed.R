@@ -63,7 +63,7 @@ while(noaa_ready){
   
   message("Generating inflow forecast")
   #source(file.path(lake_directory, "workflows", config_set_name, "02_run_inflow_forecast.R"))
-  use_oxygenation <- FALSE
+  use_oxygenation <- TRUE
   source(file.path(lake_directory, "workflows", config_set_name, "xgboost_inflow_aed.R"))
   
   # Run FLARE

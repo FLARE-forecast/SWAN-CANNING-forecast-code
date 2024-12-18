@@ -98,18 +98,18 @@
    cd = 0.0013
 /
 &inflow
-   num_inflows = 0
-   names_of_strms = 'Riv1','Riv2'
+   num_inflows = 2
+   names_of_strms = 'SouthCann','Oxy'
    subm_flag = .true.,.true.
    strm_hf_angle = 55,55
-   strmbd_slope = 0.05,0.05
-   strmbd_drag = 0.016,0.016
-   subm_elev = 5.0,3.0
-   inflow_factor = 1.0,0.4
+   strmbd_slope = 2.0, 2.0
+   strmbd_drag = 0.016, 0.016
+   subm_elev = 4.5,4.8
+   inflow_factor = 1.0,0.5
    coef_inf_entrain = 0,0
    inflow_fl = 'canning_inf_S616027_WQ.csv','sample_oxygenation.csv'
    inflow_varnum = 3
-   inflow_vars = 'FLOW','TEMP','SALT'
+   inflow_vars    =  'FLOW','SALT','TEMP','TRC_tr1','TRC_age','NCS_ss1','OXY_oxy','SIL_rsi','NIT_amm','NIT_nit','PHS_frp','PHS_frp_ads','OGM_doc','OGM_poc','OGM_don','OGM_pon','OGM_dop','OGM_pop','OGM_docr','OGM_donr','OGM_dopr','OGM_cpom','PHY_grn'                    
 /
 &outflow
    num_outlet   = 0

@@ -49,8 +49,15 @@
 !
 !-------------------------------------------------------------------------------
 &aed_models
-  models = 'aed_tracer','aed_noncohesive','aed_oxygen','aed_silica','aed_nitrogen','aed_phosphorus','aed_organic_matter', 'aed_phytoplankton'
-
+    models =  'aed_tracer',
+              'aed_noncohesive',
+              'aed_oxygen',
+              'aed_nitrogen',
+              'aed_phosphorus',
+              'aed_organic_matter',
+              'aed_phytoplankton',
+	          !  'aed_totals',
+              'aed_habitat_water'
 /
 !###############################################################################
 ! TRC: aed_tracer
@@ -63,7 +70,7 @@
    !-- Optional retention time tracer
     retention_time = .true.
    !-- Select number of tracers and their decay/sedflux/light properties
-    num_tracers = 0
+    num_tracers = 1 !0
 /
 !###############################################################################
 ! NCS: aed_noncohesive
@@ -75,8 +82,8 @@
 &aed_noncohesive
    !-- Select SS groups and their light attenuation
     num_ss       = 1
-    !ss_initial   = 0,0
-    Ke_ss        = 0.06,
+    !ss_initial   = 1,1
+    Ke_ss        = 0.06
    !-- Configure particle settling
     settling     = 1
     w_ss         = -0.03
@@ -90,7 +97,7 @@
     Ktau_0       = 0.001
     macrophyte_link_var = ''
    !-- Configure sediment mass
-    simSedimentMass= .true.
+    simSedimentMass= .false.
     fs           = 0.4
     sed_porosity = 0.6
 /
@@ -102,61 +109,13 @@
 !
 !-------------------------------------------------------------------------------
 &aed_oxygen
-    oxy_min=0.0
-    oxy_max=500.0
-    oxy_initial=225.0
-    Fsed_oxy=-50.0
-    Ksed_oxy=100.0
-    theta_sed_oxy=1.08
-    Fsed_oxy_variable=''   ! Link to SDF 19 zones
-/
-!###############################################################################
-! CAR: aed_carbon - AED carbon model
-!
-! Refer to the below link for module settings & parameter details:
-! http://aquatic.science.uwa.edu.au/research/models/AED/aed_nutrient.html
-!
-!-------------------------------------------------------------------------------
-&aed_carbon
-   !-- DIC & pH
-    dic_initial = 1600.5
-    Fsed_dic = 3.0
-    Ksed_dic = 20.0
-    theta_sed_dic = 1.08
-    Fsed_dic_variable = 'Fsed_dic'
-    pH_initial = 7.5
-    atm_co2 = 370e-6  !atm
-    co2_model = 1
-    alk_mode = 1
-    ionic = 0.1
-    co2_piston_model = 1
-   !-- CH4
-    ch4_initial = 27.6
-    Rch4ox = 0.01
-    Kch4ox = 0.5
-    vTch4ox = 1.08
-    Fsed_ch4 = 0.5
-    Ksed_ch4 = 100.0
-    theta_sed_ch4 = 1.08
-    methane_reactant_variable = 'OXY_oxy'
-   !Fsed_ch4_variable = 'Fsed_ch4'
-    atm_ch4 = 1.76e-6    !atm
-    ch4_piston_model = 1
-/
-!###############################################################################
-! SIL: aed_silica
-!
-! Refer to the below link for module settings & parameter details:
-! http://aquatic.science.uwa.edu.au/research/models/AED/aed_nutrient.html
-!
-!-------------------------------------------------------------------------------
-&aed_silica
-   rsi_initial = 12.5
-   Fsed_rsi = 1.8
-   Ksed_rsi = 50.0
-   theta_sed_rsi = 1.08
-   silica_reactant_variable = 'OXY_oxy'
-   Fsed_rsi_variable = ''
+   oxy_min           =   0.0
+   oxy_max           = 1000!500.0
+   oxy_initial       = 225.0
+   Fsed_oxy          = -40 !-50.0
+   Ksed_oxy          = 1000! 100.0
+   theta_sed_oxy     =   1.08
+   Fsed_oxy_variable = ''  
 /
 !###############################################################################
 ! NIT: aed_nitrogen - AED nitrogen model
@@ -167,11 +126,11 @@
 !-------------------------------------------------------------------------------
 &aed_nitrogen
   !-- Initial values
-   amm_initial = 12.7
-   nit_initial = 23.5
+   amm_initial = 2 !12.7
+   nit_initial = 2 !23.5
    n2o_initial = 23.5
   !-- Nitrification
-   Rnitrif =  0.1
+   Rnitrif =  0.2
    Knitrif = 78.1
    theta_nitrif = 1.08
    nitrif_reactant_variable = 'OXY_oxy'
@@ -223,8 +182,8 @@
 !
 !-------------------------------------------------------------------------------
 &aed_phosphorus
-   frp_initial = 0.29
-   Fsed_frp = 0.2
+   frp_initial = 0.1 !0.29
+   Fsed_frp = 0.001
    Ksed_frp = 50.0
    theta_sed_frp = 1.10
    phosphorus_reactant_variable ='OXY_oxy'
@@ -257,11 +216,11 @@
      doc_initial  =  39.9
      pon_initial  =   8.3
      don_initial  =   1.3
-     pop_initial  =   8.3
-     dop_initial  =   1.5
+     pop_initial  =   0.5 !8.3
+     dop_initial  =   0.1 !1.5
      docr_initial = 350.0
      donr_initial =  13.0
-     dopr_initial =   3.0
+     dopr_initial =  0.2 !3.0
      cpom_initial = 100.0
    !-- Breakdown and mineralisation (basic pool)
      Rdom_minerl  =   0.035
@@ -269,7 +228,7 @@
      Rdoc_minerl  =   0.001
      Rpon_hydrol  =   0.05
      Rdon_minerl  =   0.005
-     Rpop_hydrol  =   0.05
+     Rpop_hydrol  =   0.01 ! 0.05
      Rdop_minerl  =   0.001
      theta_hydrol =   1.08
      theta_minerl =   1.08
@@ -313,7 +272,7 @@
 
     !-- Particle settling parameters
      settling     =  1
-     w_pom        = -0.06
+     w_pom        = -0.5    !We set this really high because of te inflown nutrient uncertsinty
      d_pom        =  1e-5
      rho_pom      = 1.2e3
      w_cpom       = -0.01
@@ -337,7 +296,7 @@
      Fsed_dop_variable = ''
 
      !-- Other options
-     diag_level = 10
+      extra_diag = .false. !.true.
 /
 !###############################################################################
 ! PHY: aed_phytoplankton - AED phytoplankton model
@@ -348,19 +307,11 @@
 !-------------------------------------------------------------------------------
 &aed_phytoplankton
    !-- Configure phytoplankton groups to simulate & their settling
-     num_phytos   =   3
+     num_phytos   =   1 !3
      the_phytos   =   1,2,3
      settling     =   1,1,1
    !-- Benthic phytoplankton group (microphytobenthos)
      do_mpb       =   0
-     R_mpbg       =   0.5
-     R_mpbr       =   0.05
-     I_Kmpb       = 100.00
-     mpb_max      =1000.00
-	   resuspension =   0.45, 0.45, 0.45, 0.45, 0.45,0.45, 0.45,0.45
-     resus_link   =  'NCS_resus'
-     n_zones      =   3
-     active_zones =   3,4,5,6,7,8,9,10,11,12,13,14,15,16,16,18,19
    !-- Set link variables to other modules
      p_excretion_target_variable ='OGM_dop'
      n_excretion_target_variable ='OGM_don'
@@ -373,7 +324,7 @@
      p1_uptake_target_variable   ='PHS_frp'
      n1_uptake_target_variable   ='NIT_nit'
      n2_uptake_target_variable   ='NIT_amm'
-     si_uptake_target_variable   ='SIL_rsi'
+     si_uptake_target_variable   =''
      do_uptake_target_variable   ='OXY_oxy'
      c_uptake_target_variable    =''
    !-- General options
@@ -382,4 +333,65 @@
     !zerolimitfudgefactor = ??
      min_rho =  900.0
      max_rho = 1200.0
+/
+
+!###############################################################################
+! TOT: aed_totals
+!
+!  TN_vars      = list of variable contributing to total nitrogen
+!  TN_varscale  = scaling of TN variables contribution
+!  TP_vars      = list of variable contributing to total phosphorus
+!  TP_varscale  = scaling of TP variables contribution
+!  TOC_vars     = list of variable contributing to total organic carbon
+!  TOC_varscale = scaling of TOC variables contribution
+!  TSS_vars     = list of variable contributing to total suspended solids
+!  TSS_varscale = scaling of TSS variables contribution
+!
+!-------------------------------------------------------------------------------
+&aed_totals
+   outputLight  = .true.
+   TN_vars      =  'NIT_nit','NIT_amm','OGM_don','OGM_pon','OGM_donr','OGM_cpom','PHY_grn','PHY_bga','PHY_diatom'
+   TN_varscale  =   1.0,      1.0,      1.0,       1.0,     1.0,	      0.005,     0.15,      0.15,         0.15
+   TP_vars =  'PHS_frp',
+              'PHS_frp_ads',
+              'OGM_dop',
+              'OGM_dopr',
+              'OGM_pop',
+              'OGM_cpom',
+              'PHY_grn',
+              'PHY_bga',
+              'PHY_diatom'
+   TP_varscale = 1.0, 1.0, 1.0, 1.0, 1.0, 0.0001, 0.01, 0.01, 0.01
+   TOC_vars = 'OGM_doc',
+              'OGM_docr',
+              'OGM_poc',
+              'OGM_cpom',
+              'PHY_grn',
+              'PHY_bga',
+              'PHY_diatom'
+   TOC_varscale = 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
+   TSS_vars = 'NCS_ss1',
+			  		
+              'OGM_cpom',
+              'OGM_poc',
+              'PHY_grn',
+              'PHY_bga',
+              'PHY_diatom'
+   TSS_varscale = 1.0, 1.0, 0.024, 0.024, 0.02, 0.02, 0.02
+   Turb_vars ='NCS_ss1',
+              'OGM_cpom',
+              'OGM_poc',
+              'PHY_grn',
+              'PHY_bga',
+              'PHY_diatom'
+   Turb_varscale = 0.33,0.30,0.003,0.003,0.003,0.003,0.003
+  ! Table 4 in science plan, with OGM and PHY vars converted from mmolC to gC) ;
+/
+&aed_habitat_water
+simFishTolerance = .true.
+num_fish = 4
+fish_alpha = 1,11,15,11
+fish_Tmax = 39,32,34,32
+fish_Ko = 2,20,10,20
+fish_Ocrit = 1,8,7,8
 /

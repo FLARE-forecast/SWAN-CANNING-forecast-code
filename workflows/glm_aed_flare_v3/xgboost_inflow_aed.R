@@ -50,13 +50,18 @@ xg_inflow_historic <- xg_flow_forecast[[2]]
 
 oxygenation_df <- oxygenation_inflow(inflow_forecast_future = xg_inflow_future, 
                                      inflow_forecast_historic = xg_inflow_historic,
-                                     use_oxygenation = use_oxygenation)
+                                     use_oxygenation = TRUE)
+
 
 flow_combined_future <- bind_rows(xg_inflow_future,oxygenation_df[[1]])
+#flow_combined_future <- xg_inflow_future
+
 arrow::write_dataset(flow_combined_future,
                      file.path(lake_directory, "drivers/inflow/future",paste0('model_id=',config$flows$forecast_inflow_model)),
                      partitioning = c('reference_datetime', 'site_id'))
 
 flow_combined_historic <- bind_rows(xg_inflow_historic,oxygenation_df[[2]])
+#flow_combined_historic <- xg_inflow_historic
+
 arrow::write_dataset(flow_combined_historic, path = file.path(lake_directory,
                                                               "drivers/inflow/historic",paste0('model_id=',config$flows$forecast_inflow_model),"site_id=CANN"))
