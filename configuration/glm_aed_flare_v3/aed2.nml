@@ -307,7 +307,7 @@
 !-------------------------------------------------------------------------------
 &aed_phytoplankton
    !-- Configure phytoplankton groups to simulate & their settling
-     num_phytos   =   1 !3
+     num_phytos   =   3
      the_phytos   =   1,2,3
      settling     =   1,1,1
    !-- Benthic phytoplankton group (microphytobenthos)
