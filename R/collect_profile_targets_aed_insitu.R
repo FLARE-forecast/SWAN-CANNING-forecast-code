@@ -53,18 +53,18 @@ collect_profile_targets_aed_insitu <- function(profile_data_download, sites){
                 'PHY_diatom') # CHLA * 0.5
   
   
-  aed_vars <- c("datetime", 
-                "TEMP", # "Temperature (deg C)"
-                "salt", # "Salinity (ppt)"
-                "CHLA", # `Chlorophyll a (in situ) (ug/L)`
-                "NCS_ss1",
-                'OXY_oxy', #available as is
-                'SIL_rsi', # "SiO2 (sol react) (ug/L)", "SiO2-Si (sol react) (ug/L)" (?)  
-                'NIT_amm', # "NH3-N/NH4-N (sol) (ug/L)"
-                'NIT_nit', #"NO3-N (sol) (ug/L)" + NO2-N (sol) (ug/L)
-                'PHS_frp', #"PO4-P (sol react) {SRP FRP} (ug/L)" 
-                'OGM_doc_total',
-                'OGM_don_total') 
+  # aed_vars <- c("datetime", 
+  #               "TEMP", # "Temperature (deg C)"
+  #               "salt", # "Salinity (ppt)"
+  #               "CHLA", # `Chlorophyll a (in situ) (ug/L)`
+  #               "NCS_ss1",
+  #               'OXY_oxy', #available as is
+  #               'SIL_rsi', # "SiO2 (sol react) (ug/L)", "SiO2-Si (sol react) (ug/L)" (?)  
+  #               'NIT_amm', # "NH3-N/NH4-N (sol) (ug/L)"
+  #               'NIT_nit', #"NO3-N (sol) (ug/L)" + NO2-N (sol) (ug/L)
+  #               'PHS_frp', #"PO4-P (sol react) {SRP FRP} (ug/L)" 
+  #               'OGM_doc_total',
+  #               'OGM_don_total') 
   
   profile_data <- profile_data_subset %>%  
     dplyr::filter(`Program Site Ref` %in% cannsites) |> #&

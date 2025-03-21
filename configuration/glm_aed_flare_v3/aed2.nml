@@ -336,7 +336,7 @@
 /
 
 !###############################################################################
-! TOT: aed_totals
+! TOT: aed_totals,
 !
 !  TN_vars      = list of variable contributing to total nitrogen
 !  TN_varscale  = scaling of TN variables contribution

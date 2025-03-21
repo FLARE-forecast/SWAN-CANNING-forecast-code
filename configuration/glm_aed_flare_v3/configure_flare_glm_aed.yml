@@ -93,6 +93,6 @@ uncertainty:
    parameter: TRUE
    inflow: TRUE
 output_settings:
-   diagnostics_names:  [extc]
+   diagnostics_names:  [extc, HAB_fish1, HAB_fish2, HAB_fish3, HAB_fish4]
    generate_plots: TRUE
    evaluate_past: TRUE
