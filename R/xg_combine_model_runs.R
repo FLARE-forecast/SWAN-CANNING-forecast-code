@@ -51,7 +51,7 @@ xg_combine_model_runs <- function(site_id,
     
     ## pull in past NOAA data
     met_s3_past <- arrow::s3_bucket(paste0("bio230121-bucket01/flare/drivers/met/gefs-v12/stage3/site_id=",site_id),
-                                    endpoint_override = 'renc.osn.xsede.org',
+                                    endpoint_override = 'amnh1.osn.mghpcc.org',
                                     anonymous = TRUE)
     
     years_prior <- forecast_start_datetime - lubridate::days(1825) # 5 years
