@@ -29,7 +29,7 @@ sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types
 reference_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime)
 noaa_date <- reference_datetime - lubridate::days(1)
 site_identifier <- 'CANN'
-endpoint <- 'renc.osn.xsede.org'
+endpoint <- 'amnh1.osn.mghpcc.org'
 
 
 message('done initializing....starting forecasts')
