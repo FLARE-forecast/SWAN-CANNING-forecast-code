@@ -1,27 +1,27 @@
 s3:
   drivers:
-    endpoint: renc.osn.xsede.org
+    endpoint: amnh1.osn.mghpcc.org
     bucket: bio230121-bucket01/flare/drivers/met
   inflow_drivers:
-    endpoint: renc.osn.xsede.org
+    endpoint: amnh1.osn.mghpcc.org
     bucket: bio230121-bucket01/flare/drivers/inflow/CANN
   outflow_drivers:
-    endpoint: renc.osn.xsede.org
+    endpoint: amnh1.osn.mghpcc.org
     bucket: bio230121-bucket01/flare/drivers/outflow/CANN
   targets:
-    endpoint: renc.osn.xsede.org
+    endpoint: amnh1.osn.mghpcc.org
     bucket: bio230121-bucket01/flare/targets
   forecasts:
-    endpoint: renc.osn.xsede.org
+    endpoint: amnh1.osn.mghpcc.org
     bucket: bio230121-bucket01/flare/forecasts/netcdf
   forecasts_parquet:
-    endpoint: renc.osn.xsede.org
+    endpoint: amnh1.osn.mghpcc.org
     bucket: bio230121-bucket01/flare/forecasts/parquet
   restart:
-    endpoint: renc.osn.xsede.org
+    endpoint: amnh1.osn.mghpcc.org
     bucket: bio230121-bucket01/flare/restart
   scores:
-    endpoint: renc.osn.xsede.org
+    endpoint: amnh1.osn.mghpcc.org
     bucket: bio230121-bucket01/flare/scores/parquet
 location:
    site_id: CANN
@@ -93,6 +93,7 @@ uncertainty:
    parameter: TRUE
    inflow: TRUE
 output_settings:
-   diagnostics_names:  [extc, HAB_fish1, HAB_fish2, HAB_fish3, HAB_fish4]
+   #diagnostics_names:  [extc, HAB_fish1, HAB_fish2, HAB_fish3, HAB_fish4]
+   diagnostics_names:  [extc]
    generate_plots: TRUE
    evaluate_past: TRUE

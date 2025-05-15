@@ -55,9 +55,9 @@
               'aed_nitrogen',
               'aed_phosphorus',
               'aed_organic_matter',
-              'aed_phytoplankton',
-	          !  'aed_totals',
-              'aed_habitat_water'
+              'aed_phytoplankton'
+              !'aed_habitat_water'
+	          !  'aed_totals'
 /
 !###############################################################################
 ! TRC: aed_tracer
@@ -388,10 +388,10 @@
   ! Table 4 in science plan, with OGM and PHY vars converted from mmolC to gC) ;
 /
 &aed_habitat_water
-simFishTolerance = .true.
-num_fish = 4
-fish_alpha = 1,11,15,11
-fish_Tmax = 39,32,34,32
-fish_Ko = 2,20,10,20
-fish_Ocrit = 1,8,7,8
+   simFishTolerance = .true.
+   num_fish = 4
+   fish_alpha = 1,11,15,11
+   fish_Tmax = 39,32,34,32
+   fish_Ko = 2,20,10,20
+   fish_Ocrit = 1,8,7,8
 /
