@@ -59,9 +59,9 @@ xg_combine_model_runs <- function(site_id,
     df_past <- arrow::open_dataset(met_s3_past) |> 
       #select(datetime, parameter, variable, prediction) |> 
       dplyr::filter(variable %in% c("precipitation_flux","air_temperature"),
-                    ((datetime <= min_datetime  & variable == "precipitation_flux") | 
-                       datetime < min_datetime  & variable == "air_temperature"),
-                    datetime > years_prior) |> 
+                    ((lubridate::as_datetime(datetime) <= lubridate::as_datetime(min_datetime)  & variable == "precipitation_flux") | 
+                       lubridate::as_datetime(datetime) < lubridate::as_datetime(min_datetime)  & variable == "air_temperature"),
+                    lubridate::as_datetime(datetime) > lubridate::as_datetime(years_prior)) |> 
       collect() |> 
       rename(ensemble = parameter) |> 
       mutate(variable = ifelse(variable == "precipitation_flux", "precipitation", variable),
